@@ -15,5 +15,5 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <CssBaseline /> {/* This resets browser default styles */}
       <App />
     </ThemeProvider>
-  </React.StrictMode>,
+  </React.StrictMode>
 );

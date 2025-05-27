@@ -32,7 +32,7 @@ const LeftSide = styled(Grid)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   justifyContent: "center",
-  alignItems: "center",  
+  alignItems: "center",
 }));
 
 const RightSide = styled(Grid)(() => ({
