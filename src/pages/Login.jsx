@@ -14,34 +14,46 @@ import {
   TextField,
   Grid,
   Card as MuiCard,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 
-const FullPageContainer = styled(Grid)(() => ({
-  height: "100vh",
-  backgroundColor: "#a084e8",
+const Wrapper = styled("div")(({ theme }) => ({
+  minHeight: "100vh",
+  width: "100%",
+  overflow: "hidden",
   display: "flex",
-  justifyContent: "flex-start",
+  backgroundColor: "#a084e8",
+  [theme.breakpoints.down("md")]: {
+    flexDirection: "column",
+  },
 }));
 
-const LeftSide = styled(Grid)(({ theme }) => ({
+const LeftSide = styled("div")(({ theme }) => ({
   backgroundColor: "#fff",
   padding: theme.spacing(8),
-  width: "50vw",
-  minHeight: "100vh",
+  width: "50%",
   display: "flex",
   flexDirection: "column",
   justifyContent: "center",
-  alignItems: "center",  
+  alignItems: "center",
+  [theme.breakpoints.down("md")]: {
+    width: "100%",
+    padding: theme.spacing(4),
+  },
 }));
 
-const RightSide = styled(Grid)(() => ({
-  width: "50vw",
-  minHeight: "100vh",
+const RightSide = styled("div")(({ theme }) => ({
+  width: "50%",
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
   backgroundColor: "#a084e8",
+  [theme.breakpoints.down("md")]: {
+    width: "100%",
+    padding: theme.spacing(4),
+  },
 }));
 
 const RoundedTextField = styled(TextField)(() => ({
@@ -51,7 +63,6 @@ const RoundedTextField = styled(TextField)(() => ({
   },
 }));
 
-// Styled Card matching your signup card style
 const Card = styled(MuiCard)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
@@ -67,11 +78,14 @@ const Card = styled(MuiCard)(({ theme }) => ({
 }));
 
 export default function Login() {
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+
   return (
     <>
       <CssBaseline />
-      <FullPageContainer container>
-        <LeftSide item>
+      <Wrapper>
+        <LeftSide>
           <Card variant="outlined">
             <Typography
               component="h1"
@@ -151,15 +165,20 @@ export default function Login() {
           </Card>
         </LeftSide>
 
-        <RightSide item>
+        <RightSide>
           <Box
             component="img"
             src="/rafiq4.png"
             alt="Illustration"
-            sx={{ maxWidth: "100%", height: "auto" }}
+            sx={{
+              maxWidth: "100%",
+              height: "auto",
+              borderRadius: 3,
+              boxShadow: isSmallScreen ? 3 : 0,
+            }}
           />
         </RightSide>
-      </FullPageContainer>
+      </Wrapper>
     </>
   );
 }

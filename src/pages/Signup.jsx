@@ -11,34 +11,40 @@ import {
   Link,
   TextField,
   Typography,
-  Grid,
   Card as MuiCard,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
 
-const FullPageContainer = styled(Grid)(() => ({
+const FullPageContainer = styled("div")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "row",
   height: "100vh",
-  backgroundColor: "#a084e8",
-  display: "flex",
+  width: "100%",
+  [theme.breakpoints.down("sm")]: {
+    flexDirection: "column",
+    height: "auto",
+  },
 }));
 
-const LeftSide = styled(Grid)(() => ({
-  width: "50vw",
-  minHeight: "100vh",
+const LeftSide = styled("div")(({ theme }) => ({
+  flex: "1",
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
   backgroundColor: "#a084e8",
+  padding: theme.spacing(2),
+  [theme.breakpoints.down("sm")]: {
+    height: "200px",
+  },
 }));
 
-const RightSide = styled(Grid)(({ theme }) => ({
+const RightSide = styled("div")(({ theme }) => ({
+  flex: "1",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
   backgroundColor: "#fff",
-  width: "50vw",
-  minHeight: "100vh",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
   padding: theme.spacing(4),
 }));
 
@@ -67,18 +73,22 @@ export default function SignUp() {
   return (
     <>
       <CssBaseline />
-      <FullPageContainer container>
-        <LeftSide item>
+      <FullPageContainer>
+        <LeftSide>
           <Box
             component="img"
             src="/rafiq4.png"
             alt="Illustration"
-            sx={{ maxWidth: "100%", height: "auto" }}
+            sx={{
+              maxWidth: "100%",
+              maxHeight: "100%",
+              objectFit: "contain",
+            }}
           />
         </LeftSide>
 
-        <RightSide item>
-          <Card variant="outlined">
+        <RightSide>
+          <Card>
             <Typography
               component="h1"
               variant="h4"
