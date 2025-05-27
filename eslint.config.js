@@ -7,8 +7,8 @@ import { defineConfig } from "eslint/config";
 
 
 export default defineConfig([
-  { files: ["**/*.{js,mjs,cjs,jsx}"], languageOptions: { globals: globals.browser } },
-  pluginReact.configs.flat.recommended,
+  // { files: ["**/*.{js,mjs,cjs,jsx}"], languageOptions: { globals: globals.browser } },
+  // pluginReact.configs.flat.recommended,
   { files: ["**/*.json"], plugins: { json }, language: "json/json" },
   { files: ["**/*.jsonc"], plugins: { json }, language: "json/jsonc" },
   { files: ["**/*.json5"], plugins: { json }, language: "json/json5" },

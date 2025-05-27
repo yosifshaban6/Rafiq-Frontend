@@ -1,4 +1,6 @@
-import { Login } from "@mui/icons-material";
+import Login from "../pages/Login";
+import Signup from "../pages/Signup";
+
 import { BrowserRouter, Routes, Route } from "react-router";
 
 function AppRouter() {
@@ -7,7 +9,7 @@ function AppRouter() {
       <Routes>
         <Route path="/" element={<h1>Home Page</h1>} />
         <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<h1>Register Page</h1>} />
+        <Route path="/Signup" element={<Signup />} />
       </Routes>
     </BrowserRouter>
   );
