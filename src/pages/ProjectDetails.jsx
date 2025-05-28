@@ -74,7 +74,7 @@ export default function Projectdetails() {
                 <Rating value={project.rating} precision={0.5} readOnly />
               </CardContent>
             </Card>
-            <Box mt={5} p={3}>
+            <Box mt={5} mb={2}>
               <Typography textAlign="center" variant="h6" gutterBottom>
                 Recommended Projects
               </Typography>
@@ -93,12 +93,14 @@ export default function Projectdetails() {
                           variant="contained"
                           sx={{
                             mt: 2,
-                            backgroundImage: 'linear-gradient(135deg, #a084e8,rgb(202, 70, 174))',
-                            boxShadow: 'none',
-                            textTransform: 'none',
-                            fontWeight: 'bold',
-                            '&:hover': {
-                              backgroundImage: 'linear-gradient(135deg, #8668e1, #6b5fc7)',
+                            backgroundImage:
+                              "linear-gradient(135deg, #a084e8,rgb(202, 70, 174))",
+                            boxShadow: "none",
+                            textTransform: "none",
+                            fontWeight: "bold",
+                            "&:hover": {
+                              backgroundImage:
+                                "linear-gradient(135deg, #8668e1, #6b5fc7)",
                             },
                           }}
                         >
@@ -126,9 +128,10 @@ export default function Projectdetails() {
                   sx={{
                     height: 10,
                     borderRadius: 5,
-                    backgroundColor: '#e0e0e0',
-                    '& .MuiLinearProgress-bar': {
-                      backgroundImage: 'linear-gradient(135deg, #8668e1,rgb(228, 48, 138))',
+                    backgroundColor: "#e0e0e0",
+                    "& .MuiLinearProgress-bar": {
+                      backgroundImage:
+                        "linear-gradient(135deg, #8668e1,rgb(228, 48, 138))",
                       borderRadius: 5,
                     },
                   }}
@@ -150,12 +153,14 @@ export default function Projectdetails() {
                   variant="contained"
                   sx={{
                     mt: 2,
-                    backgroundImage: 'linear-gradient(135deg, #a084e8,rgb(202, 70, 174))',
-                    boxShadow: 'none',
-                    textTransform: 'none',
-                    fontWeight: 'bold',
-                    '&:hover': {
-                      backgroundImage: 'linear-gradient(135deg, #8668e1, #6b5fc7)',
+                    backgroundImage:
+                      "linear-gradient(135deg, #a084e8,rgb(202, 70, 174))",
+                    boxShadow: "none",
+                    textTransform: "none",
+                    fontWeight: "bold",
+                    "&:hover": {
+                      backgroundImage:
+                        "linear-gradient(135deg, #8668e1, #6b5fc7)",
                     },
                   }}
                 >
@@ -181,12 +186,14 @@ export default function Projectdetails() {
                   variant="contained"
                   sx={{
                     mt: 2,
-                    backgroundImage: 'linear-gradient(135deg, #a084e8,rgb(202, 70, 174))',
-                    boxShadow: 'none',
-                    textTransform: 'none',
-                    fontWeight: 'bold',
-                    '&:hover': {
-                      backgroundImage: 'linear-gradient(135deg, #8668e1, #6b5fc7)',
+                    backgroundImage:
+                      "linear-gradient(135deg, #a084e8,rgb(202, 70, 174))",
+                    boxShadow: "none",
+                    textTransform: "none",
+                    fontWeight: "bold",
+                    "&:hover": {
+                      backgroundImage:
+                        "linear-gradient(135deg, #8668e1, #6b5fc7)",
                     },
                   }}
                 >
@@ -197,8 +204,6 @@ export default function Projectdetails() {
           </Box>
         </Box>
       </Box>
-
-
     </Box>
   );
 }
