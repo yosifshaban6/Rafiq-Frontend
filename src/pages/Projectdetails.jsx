@@ -74,6 +74,42 @@ export default function Projectdetails() {
                 <Rating value={project.rating} precision={0.5} readOnly />
               </CardContent>
             </Card>
+            <Box mt={5} p={3}>
+              <Typography textAlign="center" variant="h6" gutterBottom>
+                Recommended Projects
+              </Typography>
+              <Divider sx={{ mb: 2 }} />
+              <Grid container spacing={2}>
+                {[1, 2, 3, 4].map((_, i) => (
+                  <Grid item xs={12} sm={6} md={4} key={i}>
+                    <Card>
+                      <CardMedia component="img" height="140" image="/3.jpg" />
+                      <CardContent>
+                        <Typography variant="subtitle1">
+                          Sample Project {i + 1}
+                        </Typography>
+                        <Button
+                          fullWidth
+                          variant="contained"
+                          sx={{
+                            mt: 2,
+                            backgroundImage: 'linear-gradient(135deg, #a084e8,rgb(202, 70, 174))',
+                            boxShadow: 'none',
+                            textTransform: 'none',
+                            fontWeight: 'bold',
+                            '&:hover': {
+                              backgroundImage: 'linear-gradient(135deg, #8668e1, #6b5fc7)',
+                            },
+                          }}
+                        >
+                          Read More
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+            </Box>
           </Box>
 
           {/* الكروتين فوق بعض على اليمين */}
@@ -87,8 +123,15 @@ export default function Projectdetails() {
                 <LinearProgress
                   variant="determinate"
                   value={progress}
-                  color="success"
-                  sx={{ height: 10, borderRadius: 4, my: 1 }}
+                  sx={{
+                    height: 10,
+                    borderRadius: 5,
+                    backgroundColor: '#e0e0e0',
+                    '& .MuiLinearProgress-bar': {
+                      backgroundImage: 'linear-gradient(135deg, #8668e1,rgb(228, 48, 138))',
+                      borderRadius: 5,
+                    },
+                  }}
                 />
 
                 <Box
@@ -107,10 +150,12 @@ export default function Projectdetails() {
                   variant="contained"
                   sx={{
                     mt: 2,
-                    backgroundColor: "#a084e8",
-                    fontWeight: "bold",
-                    "&:hover": {
-                      backgroundColor: "#8668e1",
+                    backgroundImage: 'linear-gradient(135deg, #a084e8,rgb(202, 70, 174))',
+                    boxShadow: 'none',
+                    textTransform: 'none',
+                    fontWeight: 'bold',
+                    '&:hover': {
+                      backgroundImage: 'linear-gradient(135deg, #8668e1, #6b5fc7)',
                     },
                   }}
                 >
@@ -136,10 +181,12 @@ export default function Projectdetails() {
                   variant="contained"
                   sx={{
                     mt: 2,
-                    backgroundColor: "#a084e8",
-                    fontWeight: "bold",
-                    "&:hover": {
-                      backgroundColor: "#8668e1",
+                    backgroundImage: 'linear-gradient(135deg, #a084e8,rgb(202, 70, 174))',
+                    boxShadow: 'none',
+                    textTransform: 'none',
+                    fontWeight: 'bold',
+                    '&:hover': {
+                      backgroundImage: 'linear-gradient(135deg, #8668e1, #6b5fc7)',
                     },
                   }}
                 >
@@ -151,40 +198,7 @@ export default function Projectdetails() {
         </Box>
       </Box>
 
-      <Box mt={5} p={3}>
-        <Typography textAlign="center" variant="h6" gutterBottom>
-          Recommended Projects
-        </Typography>
-        <Divider sx={{ mb: 2 }} />
-        <Grid container spacing={2}>
-          {[1, 2, 3].map((_, i) => (
-            <Grid item xs={12} sm={6} md={4} key={i}>
-              <Card>
-                <CardMedia component="img" height="140" image="/3.jpg" />
-                <CardContent>
-                  <Typography variant="subtitle1">
-                    Sample Project {i + 1}
-                  </Typography>
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    sx={{
-                      mt: 2,
-                      backgroundColor: "#a084e8",
-                      fontWeight: "bold",
-                      "&:hover": {
-                        backgroundColor: "#8668e1",
-                      },
-                    }}
-                  >
-                    Read More
-                  </Button>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
-      </Box>
+
     </Box>
   );
 }
