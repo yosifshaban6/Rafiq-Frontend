@@ -11,9 +11,11 @@ import {
   Button,
   Tooltip,
   MenuItem,
+  InputBase,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
+import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate } from "react-router-dom";
 
 const pages = [
@@ -25,6 +27,36 @@ const settings = [
   { name: "Profile", path: "/profile" },
   { name: "Logout", path: "/logout" },
 ];
+
+const searchStyles = {
+  position: "relative",
+  borderRadius: 4,
+  backgroundColor: "rgba(255,255,255,0.15)",
+  "&:hover": {
+    backgroundColor: "rgba(255,255,255,0.25)",
+  },
+  marginLeft: 2,
+  width: "100%",
+  maxWidth: 200,
+  display: { xs: "none", sm: "flex" },
+};
+
+const iconWrapper = {
+  padding: "0 8px",
+  height: "100%",
+  position: "absolute",
+  pointerEvents: "none",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+};
+
+const inputStyle = {
+  color: "inherit",
+  paddingLeft: "32px",
+  width: "100%",
+  fontSize: "0.9rem",
+};
 
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -53,13 +85,14 @@ function ResponsiveAppBar() {
         justifyContent: "center",
         width: "100%",
         p: 2,
+        bgcolor:"none",
       }}
     >
       <AppBar
         position="static"
         sx={{
           bgcolor: "#4A2F8F",
-          height: 48, // Reduced from 64 to make it thinner
+          height: 48,
           borderRadius: 8,
           maxWidth: "lg",
           width: "100%",
@@ -71,7 +104,7 @@ function ResponsiveAppBar() {
             disableGutters
             sx={{
               height: "100%",
-              minHeight: "48px !important", // Override default min-height
+              minHeight: "48px !important",
             }}
           >
             {/* Mobile Menu */}
@@ -134,20 +167,21 @@ function ResponsiveAppBar() {
                   fontWeight: 700,
                   color: "inherit",
                   textDecoration: "none",
-                  fontSize: "1.1rem", // Smaller text
+                  fontSize: "1.1rem",
                 }}
               >
                 Rafiq
               </Typography>
             </Box>
 
-            {/* Desktop Menu */}
+            {/* Desktop Menu + Search */}
             <Box
               sx={{
                 flexGrow: 1,
                 display: { xs: "none", md: "flex" },
+                alignItems: "center",
                 justifyContent: "center",
-                ml: 4,
+                ml: 2,
               }}
             >
               {pages.map((page) => (
@@ -159,8 +193,8 @@ function ResponsiveAppBar() {
                     display: "block",
                     mx: 1,
                     borderRadius: 2,
-                    py: 0.5, // Reduced vertical padding
-                    fontSize: "0.9rem", // Smaller text
+                    py: 0.5,
+                    fontSize: "0.9rem",
                     "&:hover": {
                       bgcolor: "rgba(255, 255, 255, 0.1)",
                     },
@@ -169,6 +203,17 @@ function ResponsiveAppBar() {
                   {page.name}
                 </Button>
               ))}
+              {/* Search bar */}
+              <Box sx={searchStyles}>
+                <Box sx={iconWrapper}>
+                  <SearchIcon sx={{ fontSize: 18 }} />
+                </Box>
+                <InputBase
+                  placeholder="Search…"
+                  inputProps={{ "aria-label": "search" }}
+                  sx={inputStyle}
+                />
+              </Box>
             </Box>
 
             {/* User Menu */}
@@ -177,7 +222,7 @@ function ResponsiveAppBar() {
                 <IconButton
                   onClick={handleOpenUserMenu}
                   sx={{
-                    p: 0.5, // Reduced padding
+                    p: 0.5,
                     "&:hover": {
                       transform: "scale(1.1)",
                       transition: "transform 0.2s ease",
@@ -210,7 +255,7 @@ function ResponsiveAppBar() {
                     onClick={() => handleSettingClick(setting.path)}
                     sx={{
                       borderRadius: 1,
-                      py: 0.75, // Reduced padding
+                      py: 0.75,
                       "&:hover": {
                         bgcolor: "rgba(74, 47, 143, 0.1)",
                       },
