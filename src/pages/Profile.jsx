@@ -14,7 +14,7 @@ function Profile() {
     joined: "January 2023",
     phone: "01072384294",
     birth_date: "20 June 2001",
-    image: "/1.jpg",
+    image: "/6.jpg",
     bio: "I'm a passionate developer with experience in full-stack web development, particularly using React, Node.js, and MongoDB. I enjoy building user-friendly applications and constantly learning new technologies. I also love contributing to open-source projects and collaborating with diverse teams.",
   };
 

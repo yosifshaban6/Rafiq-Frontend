@@ -5,6 +5,7 @@ import ProjectDetails from "../pages/ProjectDetails";
 import Profile from "../pages/Profile";
 import MainLayout from "../layouts/MainLayout";
 import Home from "../pages/Home";
+import CreateProject from "../pages/CreateProject";
 import { BrowserRouter, Routes, Route } from "react-router";
 
 function AppRouter() {
@@ -18,6 +19,7 @@ function AppRouter() {
           <Route path="/allproject" element={<ProjectList />} />
           <Route path="/projectdetails" element={<ProjectDetails />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/create" element={<CreateProject />} />
         </Route>
       </Routes>
     </BrowserRouter>

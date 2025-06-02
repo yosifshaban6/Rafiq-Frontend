@@ -16,7 +16,7 @@ const projects = [
     id: 1,
     title: "Eco-Friendly Water Bottles",
     description: "Help us reduce plastic waste with reusable water bottles.",
-    image: "/1.jpg",
+    image: "/6.jpg",
     raised: 9500,
     goal: 10000,
     date: "May 26, 2025",

@@ -21,7 +21,7 @@ import { useNavigate } from "react-router-dom";
 const pages = [
   { name: "Home", path: "/" },
   { name: "Projects", path: "/allproject" },
-  { name: "Create", path: "/create" },
+  { name: "Create New Project", path: "/create" },
 ];
 const settings = [
   { name: "Profile", path: "/profile" },
@@ -231,7 +231,7 @@ function ResponsiveAppBar() {
                 >
                   <Avatar
                     alt="User"
-                    src="/1.jpg"
+                    src="/8.jpg"
                     sx={{
                       width: 32,
                       height: 32,
