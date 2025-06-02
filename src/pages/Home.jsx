@@ -4,6 +4,10 @@ import { Box, Typography, Container, Grid, Paper, List, ListItem, Button } from 
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import { Link } from 'react-router-dom';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import LightbulbIcon from '@mui/icons-material/Lightbulb';
+import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 
 // Custom Arrow Components
 function SampleNextArrow(props) {
@@ -58,7 +62,7 @@ export default function Home() {
     const latestProjects = ['Test', 'Sixth', 'War', 'Third', 'Save Roxy'];
     const featuredProjects = ['First', 'Save Roxy', 'War', 'Sixth', 'Test'];
 
-    const sliderImages = ['/1.jpg', '/2.jpg', '/3.jpg'];
+    const sliderImages = ['/6.jpg', '/2.jpg', '/3.jpg'];
 
     const sliderSettings = {
         dots: true,
@@ -206,13 +210,33 @@ export default function Home() {
                                         justifyContent: "space-between",
                                     }}
                                 >
-                                    <Typography variant="h6" gutterBottom>
-                                        {project.title}
-                                    </Typography>
+                                    <Box display="flex" alignItems="center" justifyContent="center" mb={2} gap={1}>
+                                        {project.title === "Latest Projects" && (
+                                            <CheckCircleIcon sx={{ color: "#fff" }} />
+                                        )}
+                                        {project.title === "Featured Projects" && (
+                                            <LightbulbIcon sx={{ color: "#fff" }} />
+                                        )}
+                                        <Typography variant="h6" sx={{ color: "#fff" }}>
+                                            {project.title}
+                                        </Typography>
+                                    </Box>
                                     <List sx={{ flexGrow: 1 }}>
                                         {project.items.map((item, i) => (
-                                            <ListItem key={i} sx={{ pl: 0 }}>
-                                                {item}
+                                            <ListItem
+                                                key={i}
+                                                sx={{
+                                                    justifyContent: "center",
+                                                    textAlign: "center",
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    gap: 1,
+                                                    color: "#fff",
+                                                    py: 0.5,
+                                                }}
+                                            >
+                                                <FiberManualRecordIcon sx={{ fontSize: 10, color: "#fff" }} />
+                                                <Typography variant="body1">{item}</Typography>
                                             </ListItem>
                                         ))}
                                     </List>
@@ -232,22 +256,26 @@ export default function Home() {
 
             {/* Create Project Button */}
             <Box sx={{ textAlign: 'center', my: 6 }}>
-                <Button
-                    variant="contained"
-                    color="secondary"
-                    sx={{
-                        px: 4, py: 2, borderRadius: '50px',
-                        backgroundImage: "linear-gradient(135deg, #a084e8, rgb(202, 70, 174))",
-                        boxShadow: "none",
-                        textTransform: "none",
-                        fontWeight: "bold",
-                        "&:hover": {
-                            backgroundImage: "linear-gradient(135deg, #8668e1, #6b5fc7)",
-                        },
-                    }}
-                >
-                    CREATE YOUR OWN PROJECT
-                </Button>
+                <Link to="/create" style={{ textDecoration: 'none' }}>
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        sx={{
+                            px: 4,
+                            py: 2,
+                            borderRadius: '50px',
+                            backgroundImage: "linear-gradient(135deg, #a084e8, rgb(202, 70, 174))",
+                            boxShadow: "none",
+                            textTransform: "none",
+                            fontWeight: "bold",
+                            "&:hover": {
+                                backgroundImage: "linear-gradient(135deg, #8668e1, #6b5fc7)",
+                            },
+                        }}
+                    >
+                        CREATE YOUR OWN PROJECT
+                    </Button>
+                </Link>
             </Box>
         </div>
     );
