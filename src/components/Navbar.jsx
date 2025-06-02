@@ -18,7 +18,7 @@ import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
 import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate } from "react-router-dom";
 
-const user = { name: 'Yomna' }; // Change to `{ name: 'Yomna' }` to simulate login
+const user = null; // Change to { name: 'Yomna' } to simulate login
 
 const pages = (user) => [
   { name: "Home", path: "/" },
