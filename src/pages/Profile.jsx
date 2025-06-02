@@ -14,7 +14,7 @@ function Profile() {
     joined: "January 2023",
     phone: "01072384294",
     birth_date: "20 June 2001",
-    image: "/6.jpg",
+    image: "/8.jpg",
     bio: "I'm a passionate developer with experience in full-stack web development, particularly using React, Node.js, and MongoDB. I enjoy building user-friendly applications and constantly learning new technologies. I also love contributing to open-source projects and collaborating with diverse teams.",
   };
 
@@ -22,7 +22,6 @@ function Profile() {
   const goalAmount = 5000;
   const progress = (raisedAmount / goalAmount) * 100;
 
-  // Add project image path
   const projectImage = "/3.jpg";
 
   return (
@@ -59,7 +58,7 @@ function Profile() {
               <Typography variant="h5" gutterBottom fontWeight="bold">
                 About Me
               </Typography>
-              <Typography variant="body1" color="text.secondary" component="p">
+              <Typography variant="body1" color="text.secondary">
                 {user.bio}
               </Typography>
             </Paper>
@@ -76,14 +75,13 @@ function Profile() {
                 Current Project
               </Typography>
 
-              {/* Image and description side by side */}
               <Box
                 display="flex"
                 flexDirection={{ xs: "column", md: "row" }}
                 gap={3}
                 mb={3}
               >
-                {/* Project Image - takes 50% width on desktop, full width on mobile */}
+                {/* Project Image */}
                 <Box
                   sx={{
                     borderRadius: "8px",
@@ -113,89 +111,47 @@ function Profile() {
                   <Typography
                     variant="body1"
                     color="text.secondary"
-                    component="p"
                     mb={2}
                   >
                     I'm currently working on an innovative platform designed to
-                    connect communities through collaborative tools and
-                    real-time interactions. This project aims to enhance digital
-                    communication and productivity, especially for remote teams
-                    and educators.
+                    connect communities through collaborative tools and real-time
+                    interactions. This project aims to enhance digital communication
+                    and productivity, especially for remote teams and educators.
                   </Typography>
 
                   <Typography
                     variant="body2"
                     color="text.secondary"
-                    component="p"
                     mb={2}
                   >
                     To bring this project to life, I'm currently seeking funding
                     to support backend infrastructure, cloud services, and
-                    design assets. Your support can help make this idea a
-                    reality!
+                    design assets. Your support can help make this idea a reality!
                   </Typography>
 
                   {/* Project Tags */}
-                  <Box
-                    sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}
-                  >
-                    <Paper
-                      elevation={0}
-                      sx={{
-                        backgroundColor: "#e0e0e0",
-                        px: 1.5,
-                        py: 0.5,
-                        borderRadius: 4,
-                      }}
-                    >
-                      <Typography variant="caption" color="text.secondary">
-                        React
-                      </Typography>
-                    </Paper>
-                    <Paper
-                      elevation={0}
-                      sx={{
-                        backgroundColor: "#e0e0e0",
-                        px: 1.5,
-                        py: 0.5,
-                        borderRadius: 4,
-                      }}
-                    >
-                      <Typography variant="caption" color="text.secondary">
-                        Node.js
-                      </Typography>
-                    </Paper>
-                    <Paper
-                      elevation={0}
-                      sx={{
-                        backgroundColor: "#e0e0e0",
-                        px: 1.5,
-                        py: 0.5,
-                        borderRadius: 4,
-                      }}
-                    >
-                      <Typography variant="caption" color="text.secondary">
-                        MongoDB
-                      </Typography>
-                    </Paper>
-                    <Paper
-                      elevation={0}
-                      sx={{
-                        backgroundColor: "#e0e0e0",
-                        px: 1.5,
-                        py: 0.5,
-                        borderRadius: 4,
-                      }}
-                    >
-                      <Typography variant="caption" color="text.secondary">
-                        Community Platform
-                      </Typography>
-                    </Paper>
+                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
+                    {["React", "Node.js", "MongoDB", "Community Platform"].map(tag => (
+                      <Paper
+                        key={tag}
+                        elevation={0}
+                        sx={{
+                          backgroundColor: "#e0e0e0",
+                          px: 1.5,
+                          py: 0.5,
+                          borderRadius: 4,
+                        }}
+                      >
+                        <Typography variant="caption" color="text.secondary">
+                          {tag}
+                        </Typography>
+                      </Paper>
+                    ))}
                   </Box>
                 </Box>
               </Box>
 
-              {/* Progress bar below both image and description */}
+              {/* Progress Bar */}
               <Box mb={2}>
                 <Box display="flex" justifyContent="space-between">
                   <Typography variant="body2" color="text.secondary">
@@ -212,12 +168,33 @@ function Profile() {
                     height: 10,
                     borderRadius: 5,
                     mt: 1,
-                    backgroundColor: "#A084E8",
+                    backgroundColor: "#e0e0e0",
                     "& .MuiLinearProgress-bar": {
-                      backgroundColor: "#4A2F8F",
+                      background: "linear-gradient(135deg, #a084e8, rgb(202, 70, 174))",
                     },
                   }}
                 />
+              </Box>
+
+              {/* Edit Project Button */}
+              <Box textAlign="right">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  href="/edit"
+                  sx={{
+                    textTransform: "none",
+                    background: "linear-gradient(135deg, #a084e8, rgb(202, 70, 174))",
+                    fontWeight: "bold",
+                    mt: 2,
+                    px: 3,
+                    '&:hover': {
+                      background: "linear-gradient(135deg, #8a6ee8, rgb(182, 50, 164))",
+                    },
+                  }}
+                >
+                  Edit Project
+                </Button>
               </Box>
             </Paper>
           </Box>
