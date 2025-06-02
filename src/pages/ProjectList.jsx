@@ -61,7 +61,7 @@ export default function Project_list() {
             <Grid item xs={12} sm={6} md={4} key={project.id}>
               <Card
                 sx={{
-                  height: "100%",
+                  height: "410px",
                   width: "410px",
                   display: "flex",
                   flexDirection: "column",
