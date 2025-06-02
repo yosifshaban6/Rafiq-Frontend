@@ -8,6 +8,8 @@ import Home from "../pages/Home";
 import CreateProject from "../pages/CreateProject";
 import EditProject from "../pages/EditProject";
 import About from "../pages/About";
+import ForgetPassword from "../pages/ForgetPass";
+import ResetPass from "../pages/ResetPass";
 import { BrowserRouter, Routes, Route } from "react-router";
 
 function AppRouter() {
@@ -18,6 +20,8 @@ function AppRouter() {
           <Route index element={<Home />}/>
           <Route path="/signin" element={<Signin />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/reset" element={<ResetPass />} />
+          <Route path="/forget" element={<ForgetPassword />} />
           <Route path="/allproject" element={<ProjectList />} />
           <Route path="/projectdetails" element={<ProjectDetails />} />
           <Route path="/profile" element={<Profile />} />

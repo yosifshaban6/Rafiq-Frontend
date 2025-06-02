@@ -2,19 +2,16 @@ import * as React from "react";
 import {
   Box,
   Button,
-  Checkbox,
   CssBaseline,
-  Divider,
-  FormControlLabel,
-  FormLabel,
   FormControl,
-  Link,
+  FormLabel,
   TextField,
   Typography,
   Card as MuiCard,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
+import { useNavigate } from "react-router-dom";
 
 const FullPageContainer = styled("div")(({ theme }) => ({
   display: "flex",
@@ -69,7 +66,15 @@ const RoundedTextField = styled(TextField)(({ theme }) => ({
   },
 }));
 
-export default function SignUp() {
+export default function ResetPass() {
+  const navigate = useNavigate();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // يمكنك إضافة التحقق من كلمة السر هنا
+    navigate("/signin");
+  };
+
   return (
     <>
       <CssBaseline />
@@ -110,6 +115,7 @@ export default function SignUp() {
 
             <Box
               component="form"
+              onSubmit={handleSubmit}
               sx={{
                 width: "100%",
                 display: "flex",
@@ -118,34 +124,12 @@ export default function SignUp() {
               }}
             >
               <FormControl>
-                <FormLabel>First Name</FormLabel>
-                <RoundedTextField fullWidth placeholder="First Name" />
-              </FormControl>
-
-              <FormControl>
-                <FormLabel>Last Name</FormLabel>
-                <RoundedTextField fullWidth placeholder="Last Name" />
-              </FormControl>
-
-              <FormControl>
-                <FormLabel>Username</FormLabel>
-                <RoundedTextField fullWidth placeholder="Username" />
-              </FormControl>
-
-              <FormControl>
-                <FormLabel>Email</FormLabel>
-                <RoundedTextField
-                  fullWidth
-                  placeholder="Enter your@email.com"
-                />
-              </FormControl>
-
-              <FormControl>
-                <FormLabel>Password</FormLabel>
+                <FormLabel>New Password</FormLabel>
                 <RoundedTextField
                   fullWidth
                   type="password"
                   placeholder="Enter your password"
+                  required
                 />
               </FormControl>
 
@@ -155,31 +139,9 @@ export default function SignUp() {
                   fullWidth
                   type="password"
                   placeholder="Confirm your password"
+                  required
                 />
               </FormControl>
-
-              <FormControl>
-                <FormLabel>Phone Number</FormLabel>
-                <RoundedTextField
-                  fullWidth
-                  type="tel"
-                  placeholder="Enter your phone number"
-                />
-              </FormControl>
-
-              <FormControl>
-                <FormLabel>Upload Profile Image</FormLabel>
-                <RoundedTextField
-                  fullWidth
-                  type="file"
-                  inputProps={{ accept: "image/*" }}
-                />
-              </FormControl>
-
-              <FormControlLabel
-                control={<Checkbox sx={{ color: "#a084e8" }} />}
-                label="I want to receive updates via email."
-              />
 
               <Button
                 type="submit"
@@ -196,20 +158,9 @@ export default function SignUp() {
                   },
                 }}
               >
-                Register
+                Login
               </Button>
             </Box>
-
-            <Divider>
-              <Typography>or</Typography>
-            </Divider>
-
-            <Typography variant="body2">
-              Already have an account?{" "}
-              <Link href="/signin" underline="hover" sx={{ color: "#a084e8" }}>
-                Sign in
-              </Link>
-            </Typography>
           </Card>
         </RightSide>
       </FullPageContainer>

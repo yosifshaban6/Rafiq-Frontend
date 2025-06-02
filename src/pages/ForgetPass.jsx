@@ -76,7 +76,7 @@ const Card = styled(MuiCard)(({ theme }) => ({
   color: "#000",
 }));
 
-export default function Login() {
+export default function ForgetPassword() {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -112,31 +112,9 @@ export default function Login() {
               sx={{ width: "100%" }}
             >
               <FormControl fullWidth margin="normal">
-                <FormLabel>Login</FormLabel>
+                <FormLabel>Your Email</FormLabel>
                 <RoundedTextField type="email" placeholder="Enter your email" />
               </FormControl>
-
-              <FormControl fullWidth margin="normal">
-                <FormLabel>Password</FormLabel>
-                <RoundedTextField
-                  type="password"
-                  placeholder="Enter your password"
-                />
-              </FormControl>
-
-              <Stack
-                direction="row"
-                justifyContent="space-between"
-                alignItems="center"
-              >
-                <FormControlLabel
-                  control={<Checkbox sx={{ color: "#a084e8" }} />}
-                  label="Remember"
-                />
-                <Link href="/forget" variant="body2" sx={{ color: "#a084e8" }}>
-                  Forgot password?
-                </Link>
-              </Stack>
 
               <Button
                 fullWidth
@@ -151,15 +129,8 @@ export default function Login() {
                   py: 1.5,
                 }}
               >
-                Sign in
+                Send
               </Button>
-
-              <Typography mt={3} textAlign="center" variant="body2">
-                Don’t have an account?{" "}
-                <Link href="/signup" underline="hover" sx={{ color: "#a084e8" }}>
-                  Sign up
-                </Link>
-              </Typography>
             </Box>
           </Card>
         </LeftSide>
