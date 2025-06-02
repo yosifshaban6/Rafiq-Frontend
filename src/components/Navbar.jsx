@@ -18,11 +18,14 @@ import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
 import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate } from "react-router-dom";
 
-const pages = [
+const user = null; // Change to `{ name: 'Yomna' }` to simulate login
+
+const pages = (user) => [
   { name: "Home", path: "/" },
   { name: "Projects", path: "/allproject" },
-  { name: "Create New Project", path: "/create" },
+  ...(user ? [{ name: "Create New Project", path: "/create" }] : []),
 ];
+
 const settings = [
   { name: "Profile", path: "/profile" },
   { name: "Logout", path: "/logout" },
@@ -85,7 +88,7 @@ function ResponsiveAppBar() {
         justifyContent: "center",
         width: "100%",
         p: 2,
-        bgcolor:"none",
+        bgcolor: "none",
       }}
     >
       <AppBar
@@ -108,9 +111,7 @@ function ResponsiveAppBar() {
             }}
           >
             {/* Mobile Menu */}
-            <Box
-              sx={{ display: { xs: "flex", md: "none" }, alignItems: "center" }}
-            >
+            <Box sx={{ display: { xs: "flex", md: "none" }, alignItems: "center" }}>
               <IconButton
                 size="medium"
                 onClick={handleOpenNavMenu}
@@ -121,7 +122,7 @@ function ResponsiveAppBar() {
               </IconButton>
             </Box>
 
-            {/* Mobile Logo and Icon */}
+            {/* Logo */}
             <Box
               sx={{
                 display: { xs: "flex", md: "none" },
@@ -150,10 +151,8 @@ function ResponsiveAppBar() {
               </Typography>
             </Box>
 
-            {/* Desktop Logo and Icon */}
-            <Box
-              sx={{ display: { xs: "none", md: "flex" }, alignItems: "center" }}
-            >
+            {/* Desktop Logo */}
+            <Box sx={{ display: { xs: "none", md: "flex" }, alignItems: "center" }}>
               <VolunteerActivismIcon sx={{ mr: 1, fontSize: "1.2rem" }} />
               <Typography
                 variant="h6"
@@ -174,7 +173,7 @@ function ResponsiveAppBar() {
               </Typography>
             </Box>
 
-            {/* Desktop Menu + Search */}
+            {/* Menu + Search */}
             <Box
               sx={{
                 flexGrow: 1,
@@ -184,7 +183,7 @@ function ResponsiveAppBar() {
                 ml: 2,
               }}
             >
-              {pages.map((page) => (
+              {pages(user).map((page) => (
                 <Button
                   key={page.name}
                   onClick={() => handleNavClick(page.path)}
@@ -203,7 +202,6 @@ function ResponsiveAppBar() {
                   {page.name}
                 </Button>
               ))}
-              {/* Search bar */}
               <Box sx={searchStyles}>
                 <Box sx={iconWrapper}>
                   <SearchIcon sx={{ fontSize: 18 }} />
@@ -216,57 +214,93 @@ function ResponsiveAppBar() {
               </Box>
             </Box>
 
-            {/* User Menu */}
-            <Box sx={{ flexGrow: 0, display: "flex", alignItems: "center" }}>
-              <Tooltip title="User Menu">
-                <IconButton
-                  onClick={handleOpenUserMenu}
-                  sx={{
-                    p: 0.5,
-                    "&:hover": {
-                      transform: "scale(1.1)",
-                      transition: "transform 0.2s ease",
-                    },
-                  }}
-                >
-                  <Avatar
-                    alt="User"
-                    src="/8.jpg"
+            {/* Right Side: User Avatar or Auth Buttons */}
+            <Box sx={{ flexGrow: 0, display: "flex", alignItems: "center", gap: 1 }}>
+              {user ? (
+                <>
+                  <Tooltip title="User Menu">
+                    <IconButton
+                      onClick={handleOpenUserMenu}
+                      sx={{
+                        p: 0.5,
+                        "&:hover": {
+                          transform: "scale(1.1)",
+                          transition: "transform 0.2s ease",
+                        },
+                      }}
+                    >
+                      <Avatar
+                        alt="User"
+                        src="/8.jpg"
+                        sx={{
+                          width: 32,
+                          height: 32,
+                          border: "2px solid rgba(255, 255, 255, 0.8)",
+                        }}
+                      />
+                    </IconButton>
+                  </Tooltip>
+                  <Menu
+                    anchorEl={anchorElUser}
+                    open={Boolean(anchorElUser)}
+                    onClose={handleCloseUserMenu}
+                    sx={{ mt: "35px" }}
+                    anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                    transformOrigin={{ vertical: "top", horizontal: "right" }}
+                  >
+                    {settings.map((setting) => (
+                      <MenuItem
+                        key={setting.name}
+                        onClick={() => handleSettingClick(setting.path)}
+                        sx={{
+                          borderRadius: 1,
+                          py: 0.75,
+                          "&:hover": {
+                            bgcolor: "rgba(74, 47, 143, 0.1)",
+                          },
+                        }}
+                      >
+                        <Typography textAlign="center" fontSize="0.9rem">
+                          {setting.name}
+                        </Typography>
+                      </MenuItem>
+                    ))}
+                  </Menu>
+                </>
+              ) : (
+                <>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={() => navigate("/signup")}
                     sx={{
-                      width: 32,
-                      height: 32,
-                      borderRadius: "50%",
-                      border: "2px solid rgba(255, 255, 255, 0.8)",
-                    }}
-                  />
-                </IconButton>
-              </Tooltip>
-              <Menu
-                anchorEl={anchorElUser}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-                sx={{ mt: "35px" }}
-                anchorOrigin={{ vertical: "top", horizontal: "right" }}
-                transformOrigin={{ vertical: "top", horizontal: "right" }}
-              >
-                {settings.map((setting) => (
-                  <MenuItem
-                    key={setting.name}
-                    onClick={() => handleSettingClick(setting.path)}
-                    sx={{
-                      borderRadius: 1,
-                      py: 0.75,
+                      color: "#fff",
+                      borderColor: "#fff",
+                      fontSize: "0.8rem",
                       "&:hover": {
-                        bgcolor: "rgba(74, 47, 143, 0.1)",
+                        bgcolor: "rgba(255,255,255,0.1)",
                       },
                     }}
                   >
-                    <Typography textAlign="center" fontSize="0.9rem">
-                      {setting.name}
-                    </Typography>
-                  </MenuItem>
-                ))}
-              </Menu>
+                    Sign Up
+                  </Button>
+                  <Button
+                    variant="contained"
+                    size="small"
+                    onClick={() => navigate("/signin")}
+                    sx={{
+                      fontSize: "0.8rem",
+                      bgcolor: "#fff",
+                      color: "#a084e8",
+                      "&:hover": {
+                        bgcolor: "#f0f0f0",
+                      },
+                    }}
+                  >
+                    Sign In
+                  </Button>
+                </>
+              )}
             </Box>
           </Toolbar>
         </Container>
