@@ -7,6 +7,7 @@ import MainLayout from "../layouts/MainLayout";
 import Home from "../pages/Home";
 import CreateProject from "../pages/CreateProject";
 import EditProject from "../pages/EditProject";
+import About from "../pages/About";
 import { BrowserRouter, Routes, Route } from "react-router";
 
 function AppRouter() {
@@ -22,6 +23,7 @@ function AppRouter() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/create" element={<CreateProject />} />
           <Route path="/edit" element={<EditProject />} />
+          <Route path="/about" element={<About />} />
         </Route>
       </Routes>
     </BrowserRouter>

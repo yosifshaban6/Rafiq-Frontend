@@ -22,6 +22,7 @@ const user = null; // Change to `{ name: 'Yomna' }` to simulate login
 
 const pages = (user) => [
   { name: "Home", path: "/" },
+  { name: "About Us", path: "/about" },
   { name: "Projects", path: "/allproject" },
   ...(user ? [{ name: "Create New Project", path: "/create" }] : []),
 ];
