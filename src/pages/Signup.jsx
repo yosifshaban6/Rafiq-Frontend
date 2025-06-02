@@ -19,8 +19,9 @@ import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
 const FullPageContainer = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "row",
-  height: "100vh",
   width: "100%",
+  height: "100vh",
+  overflow: "hidden",
   [theme.breakpoints.down("sm")]: {
     flexDirection: "column",
     height: "auto",
@@ -28,19 +29,18 @@ const FullPageContainer = styled("div")(({ theme }) => ({
 }));
 
 const LeftSide = styled("div")(({ theme }) => ({
-  flex: "1",
+  flex: 1,
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
   backgroundColor: "#a084e8",
-  padding: theme.spacing(2),
   [theme.breakpoints.down("sm")]: {
-    height: "200px",
+    height: "250px",
   },
 }));
 
 const RightSide = styled("div")(({ theme }) => ({
-  flex: "1",
+  flex: 1,
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
@@ -80,9 +80,10 @@ export default function SignUp() {
             src="/rafiq4.png"
             alt="Illustration"
             sx={{
-              maxWidth: "100%",
-              maxHeight: "100%",
-              objectFit: "contain",
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              maxHeight: { xs: "250px", sm: "100%" },
             }}
           />
         </LeftSide>
@@ -154,6 +155,24 @@ export default function SignUp() {
                   fullWidth
                   type="password"
                   placeholder="Confirm your password"
+                />
+              </FormControl>
+
+              <FormControl>
+                <FormLabel>Phone Number</FormLabel>
+                <RoundedTextField
+                  fullWidth
+                  type="tel"
+                  placeholder="Enter your phone number"
+                />
+              </FormControl>
+
+              <FormControl>
+                <FormLabel>Upload Profile Image</FormLabel>
+                <RoundedTextField
+                  fullWidth
+                  type="file"
+                  inputProps={{ accept: "image/*" }}
                 />
               </FormControl>
 
