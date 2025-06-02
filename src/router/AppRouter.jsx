@@ -10,6 +10,8 @@ import EditProject from "../pages/EditProject";
 import About from "../pages/About";
 import ForgetPassword from "../pages/ForgetPass";
 import ResetPass from "../pages/ResetPass";
+import Contact from "../pages/Contact";
+import Success from "../pages/Success";
 import { BrowserRouter, Routes, Route } from "react-router";
 
 function AppRouter() {
@@ -28,6 +30,8 @@ function AppRouter() {
           <Route path="/create" element={<CreateProject />} />
           <Route path="/edit" element={<EditProject />} />
           <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/success" element={<Success />} />
         </Route>
       </Routes>
     </BrowserRouter>
