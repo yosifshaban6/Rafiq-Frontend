@@ -108,45 +108,43 @@ function Profile() {
 
                 {/* Project Description */}
                 <Box sx={{ flexGrow: 1 }}>
-                  <Typography
-                    variant="body1"
-                    color="text.secondary"
-                    mb={2}
-                  >
+                  <Typography variant="body1" color="text.secondary" mb={2}>
                     I'm currently working on an innovative platform designed to
-                    connect communities through collaborative tools and real-time
-                    interactions. This project aims to enhance digital communication
-                    and productivity, especially for remote teams and educators.
+                    connect communities through collaborative tools and
+                    real-time interactions. This project aims to enhance digital
+                    communication and productivity, especially for remote teams
+                    and educators.
                   </Typography>
 
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    mb={2}
-                  >
+                  <Typography variant="body2" color="text.secondary" mb={2}>
                     To bring this project to life, I'm currently seeking funding
                     to support backend infrastructure, cloud services, and
-                    design assets. Your support can help make this idea a reality!
+                    design assets. Your support can help make this idea a
+                    reality!
                   </Typography>
 
                   {/* Project Tags */}
-                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
-                    {["React", "Node.js", "MongoDB", "Community Platform"].map(tag => (
-                      <Paper
-                        key={tag}
-                        elevation={0}
-                        sx={{
-                          backgroundColor: "#e0e0e0",
-                          px: 1.5,
-                          py: 0.5,
-                          borderRadius: 4,
-                        }}
-                      >
-                        <Typography variant="caption" color="text.secondary">
-                          {tag}
-                        </Typography>
-                      </Paper>
-                    ))}
+                  <Box
+                    sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}
+                  >
+                    {["React", "Node.js", "MongoDB", "Community Platform"].map(
+                      (tag) => (
+                        <Paper
+                          key={tag}
+                          elevation={0}
+                          sx={{
+                            backgroundColor: "#e0e0e0",
+                            px: 1.5,
+                            py: 0.5,
+                            borderRadius: 4,
+                          }}
+                        >
+                          <Typography variant="caption" color="text.secondary">
+                            {tag}
+                          </Typography>
+                        </Paper>
+                      )
+                    )}
                   </Box>
                 </Box>
               </Box>
@@ -170,7 +168,8 @@ function Profile() {
                     mt: 1,
                     backgroundColor: "#e0e0e0",
                     "& .MuiLinearProgress-bar": {
-                      background: "linear-gradient(135deg, #a084e8, rgb(202, 70, 174))",
+                      background:
+                        "linear-gradient(135deg, #a084e8, rgb(202, 70, 174))",
                     },
                   }}
                 />
@@ -184,12 +183,14 @@ function Profile() {
                   href="/edit"
                   sx={{
                     textTransform: "none",
-                    background: "linear-gradient(135deg, #a084e8, rgb(202, 70, 174))",
+                    background:
+                      "linear-gradient(135deg, #a084e8, rgb(202, 70, 174))",
                     fontWeight: "bold",
                     mt: 2,
                     px: 3,
-                    '&:hover': {
-                      background: "linear-gradient(135deg, #8a6ee8, rgb(182, 50, 164))",
+                    "&:hover": {
+                      background:
+                        "linear-gradient(135deg, #8a6ee8, rgb(182, 50, 164))",
                     },
                   }}
                 >

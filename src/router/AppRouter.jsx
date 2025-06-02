@@ -19,7 +19,7 @@ function AppRouter() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<MainLayout />}>
-          <Route index element={<Home />}/>
+          <Route index element={<Home />} />
           <Route path="/signin" element={<Signin />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/reset" element={<ResetPass />} />

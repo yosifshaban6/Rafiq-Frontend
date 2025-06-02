@@ -18,7 +18,7 @@ import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
 import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate } from "react-router-dom";
 
-const user = null; // Change to { name: 'Yomna' } to simulate login
+const user = { name: "Yomna" }; // Change to { name: 'Yomna' } to simulate login
 
 const pages = (user) => [
   { name: "Home", path: "/" },
@@ -113,7 +113,9 @@ function ResponsiveAppBar() {
             }}
           >
             {/* Mobile Menu */}
-            <Box sx={{ display: { xs: "flex", md: "none" }, alignItems: "center" }}>
+            <Box
+              sx={{ display: { xs: "flex", md: "none" }, alignItems: "center" }}
+            >
               <IconButton
                 size="medium"
                 onClick={handleOpenNavMenu}
@@ -154,7 +156,9 @@ function ResponsiveAppBar() {
             </Box>
 
             {/* Desktop Logo */}
-            <Box sx={{ display: { xs: "none", md: "flex" }, alignItems: "center" }}>
+            <Box
+              sx={{ display: { xs: "none", md: "flex" }, alignItems: "center" }}
+            >
               <VolunteerActivismIcon sx={{ mr: 1, fontSize: "1.2rem" }} />
               <Typography
                 variant="h6"
@@ -217,7 +221,14 @@ function ResponsiveAppBar() {
             </Box>
 
             {/* Right Side: User Avatar or Auth Buttons */}
-            <Box sx={{ flexGrow: 0, display: "flex", alignItems: "center", gap: 1 }}>
+            <Box
+              sx={{
+                flexGrow: 0,
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+              }}
+            >
               {user ? (
                 <>
                   <Tooltip title="User Menu">

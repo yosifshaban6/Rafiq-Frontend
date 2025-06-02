@@ -29,7 +29,9 @@ export default function Success() {
           boxShadow: "0 8px 20px rgba(0, 0, 0, 0.1)",
         }}
       >
-        <CheckCircleIcon sx={{ fontSize: 80, color: "#4caf50", marginBottom: 2 }} />
+        <CheckCircleIcon
+          sx={{ fontSize: 80, color: "#4caf50", marginBottom: 2 }}
+        />
         <Typography variant="h4" fontWeight="bold" gutterBottom>
           Message Sent Successfully!
         </Typography>

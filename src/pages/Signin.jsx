@@ -156,7 +156,11 @@ export default function Login() {
 
               <Typography mt={3} textAlign="center" variant="body2">
                 Don’t have an account?{" "}
-                <Link href="/signup" underline="hover" sx={{ color: "#a084e8" }}>
+                <Link
+                  href="/signup"
+                  underline="hover"
+                  sx={{ color: "#a084e8" }}
+                >
                   Sign up
                 </Link>
               </Typography>

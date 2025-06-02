@@ -43,7 +43,11 @@ function About() {
         <Grid container spacing={4}>
           <Grid item xs={12} md={6}>
             <Box sx={{ p: 3, bgcolor: "white", borderRadius: 3, boxShadow: 3 }}>
-              <Typography variant="h6" fontWeight={600} sx={{ color: "#5c4db1" }}>
+              <Typography
+                variant="h6"
+                fontWeight={600}
+                sx={{ color: "#5c4db1" }}
+              >
                 Our Mission
               </Typography>
               <Typography variant="body2" mt={1}>
@@ -56,7 +60,11 @@ function About() {
 
           <Grid item xs={12} md={6}>
             <Box sx={{ p: 3, bgcolor: "white", borderRadius: 3, boxShadow: 3 }}>
-              <Typography variant="h6" fontWeight={600} sx={{ color: "#5c4db1" }}>
+              <Typography
+                variant="h6"
+                fontWeight={600}
+                sx={{ color: "#5c4db1" }}
+              >
                 What Makes Us Different?
               </Typography>
               <Typography variant="body2" mt={1}>
