@@ -91,7 +91,7 @@ function ResponsiveAppBar() {
       <AppBar
         position="static"
         sx={{
-          bgcolor: "#4A2F8F",
+          bgcolor: "#a084e8",
           height: 48,
           borderRadius: 8,
           maxWidth: "lg",
