@@ -18,10 +18,10 @@ function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/signin" element={<Signin />} />
+        <Route path="/signup" element={<Signup />} />
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Home />} />
-          <Route path="/signin" element={<Signin />} />
-          <Route path="/signup" element={<Signup />} />
           <Route path="/reset" element={<ResetPass />} />
           <Route path="/forget" element={<ForgetPassword />} />
           <Route path="/allproject" element={<ProjectList />} />
