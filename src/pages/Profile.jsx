@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -7,16 +8,25 @@ import Button from "@mui/material/Button";
 import { LinearProgress } from "@mui/material";
 
 function Profile() {
-  const user = {
+  const [user, setUser] = useState({
     name: "John Doe",
+    first_name: "John",
+    last_name: "Doe",
     email: "john.doe@example.com",
     address: "New York, USA",
     joined: "January 2023",
     phone: "01072384294",
-    birth_date: "20 June 2001",
-    image: "/8.jpg",
+    birth_date: "2001-09-15",
+    profile_picture: "/2.jpg",
     bio: "I'm a passionate developer with experience in full-stack web development, particularly using React, Node.js, and MongoDB. I enjoy building user-friendly applications and constantly learning new technologies. I also love contributing to open-source projects and collaborating with diverse teams.",
-  };
+  });
+
+  // useEffect(() => {
+  // }, []);
+
+  function onUpdateUser(updatedUser) {
+    setUser((prevUser) => ({ ...prevUser, ...updatedUser }));
+  }
 
   const raisedAmount = 1200;
   const goalAmount = 5000;
@@ -35,7 +45,7 @@ function Profile() {
         >
           {/* Profile Section */}
           <Box sx={{ width: { xs: "100%", md: "25%" }, flexShrink: 0 }}>
-            <ProfileCard user={user} />
+            <ProfileCard user={user} onUpdateUser={onUpdateUser} />
           </Box>
 
           {/* Bio and Project Section */}

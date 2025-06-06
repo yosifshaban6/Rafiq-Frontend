@@ -1,13 +1,62 @@
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import { Box, Card, Divider } from "@mui/material";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
+import SettingsIcon from "@mui/icons-material/Settings";
+import {
+  Box,
+  Card,
+  Divider,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+  CardContent,
+  CardMedia,
+} from "@mui/material";
 import Typography from "@mui/material/Typography";
+import { useState } from "react";
 
 function ProfileCard(props) {
-  const { user } = props;
+  const { user, onUpdateUser } = props;
+  const [openSettings, setOpenSettings] = useState(false);
+  const [formData, setFormData] = useState({
+    first_name: user.first_name || "",
+    last_name: user.last_name || "",
+    profile_picture: user.profile_picture || "",
+    bio: user.bio || "",
+    address: user.address || "",
+    birth_date: user.birth_date || "",
+    phone: user.phone || "",
+  });
+
+  const handleOpenSettings = () => {
+    setOpenSettings(true);
+  };
+
+  const handleCloseSettings = () => {
+    setOpenSettings(false);
+    setFormData({
+      first_name: user.first_name || "",
+      last_name: user.last_name || "",
+      profile_picture: user.profile_picture || "",
+      bio: user.bio || "",
+      address: user.address || "",
+      birth_date: user.birth_date || "",
+      phone: user.phone || "",
+    });
+  };
+
+  const handleSaveSettings = () => {
+    onUpdateUser(formData);
+    setOpenSettings(false);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   return (
     <Card
@@ -23,6 +72,17 @@ function ProfileCard(props) {
         overflow: "hidden",
       }}
     >
+      <SettingsIcon
+        sx={{
+          position: "absolute",
+          top: 8,
+          left: 8,
+          color: "#4A2F8F",
+          cursor: "pointer",
+          "&:hover": { color: "#3a226f" },
+        }}
+        onClick={handleOpenSettings}
+      />
       <Box
         sx={{
           width: 80,
@@ -39,11 +99,11 @@ function ProfileCard(props) {
           position: "relative",
         }}
       >
-        {user.image ? (
+        {user.profile_picture ? (
           <CardMedia
             sx={{ height: 80, width: 80, objectFit: "cover" }}
-            image={user.image}
-            title={user.name}
+            image={user.profile_picture}
+            title={`${user.first_name} ${user.last_name}`}
           />
         ) : (
           <AccountCircleIcon fontSize="large" sx={{ color: "white" }} />
@@ -74,7 +134,7 @@ function ProfileCard(props) {
             letterSpacing: "0.5px",
           }}
         >
-          {user.name}
+          {`${user.first_name} ${user.last_name}`.trim()}
         </Typography>
         <Divider
           sx={{
@@ -119,13 +179,121 @@ function ProfileCard(props) {
                     color: "text.secondary",
                   }}
                 >
-                  {item.value}
+                  {item.value || "Not provided"}
                 </Typography>
               </Box>
             </ListItem>
           ))}
         </List>
       </CardContent>
+
+      {/* Settings Dialog */}
+      <Dialog open={openSettings} onClose={handleCloseSettings}>
+        <DialogTitle sx={{ color: "#4A2F8F", fontWeight: 600 }}>
+          Account Settings
+        </DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: "flex", flexDirection: "row", gap: 2, mb: 2 }}>
+            <TextField
+              autoFocus
+              margin="dense"
+              name="first_name"
+              label="First Name"
+              type="text"
+              fullWidth
+              variant="outlined"
+              value={formData.first_name}
+              onChange={handleInputChange}
+            />
+            <TextField
+              margin="dense"
+              name="last_name"
+              label="Last Name"
+              type="text"
+              fullWidth
+              variant="outlined"
+              value={formData.last_name}
+              onChange={handleInputChange}
+            />
+          </Box>
+          <TextField
+            margin="dense"
+            name="profile_picture"
+            label="Profile Picture URL"
+            type="url"
+            fullWidth
+            variant="outlined"
+            value={formData.profile_picture}
+            onChange={handleInputChange}
+            sx={{ mb: 2 }}
+          />
+          <TextField
+            margin="dense"
+            name="bio"
+            label="Bio"
+            type="text"
+            fullWidth
+            variant="outlined"
+            multiline
+            rows={3}
+            value={formData.bio}
+            onChange={handleInputChange}
+            sx={{ mb: 2 }}
+          />
+          <TextField
+            margin="dense"
+            name="address"
+            label="Address"
+            type="text"
+            fullWidth
+            variant="outlined"
+            value={formData.address}
+            onChange={handleInputChange}
+            sx={{ mb: 2 }}
+          />
+          <TextField
+            margin="dense"
+            name="birth_date"
+            label="Birth Date"
+            type="date"
+            fullWidth
+            variant="outlined"
+            value={formData.birth_date}
+            onChange={handleInputChange}
+            sx={{ mb: 2 }}
+            slotProps={{
+              inputLabel: {
+                shrink: true,
+              },
+            }}
+          />
+          <TextField
+            margin="dense"
+            name="phone"
+            label="Phone"
+            type="tel"
+            fullWidth
+            variant="outlined"
+            value={formData.phone}
+            onChange={handleInputChange}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseSettings} sx={{ color: "#4A2F8F" }}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSaveSettings}
+            variant="contained"
+            sx={{
+              backgroundColor: "#4A2F8F",
+              "&:hover": { backgroundColor: "#3a226f" },
+            }}
+          >
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Card>
   );
 }
