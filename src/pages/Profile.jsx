@@ -6,23 +6,48 @@ import ProfileCard from "../components/ProfileCard";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
 import { LinearProgress } from "@mui/material";
+import axios from "axios"; // Import axios for API calls
+
+const VITE_SERVER_URL =
+  import.meta.env.VITE_SERVER_URL || "http://localhost:8000";
 
 function Profile() {
-  const [user, setUser] = useState({
-    name: "John Doe",
-    first_name: "John",
-    last_name: "Doe",
-    email: "john.doe@example.com",
-    address: "New York, USA",
-    joined: "January 2023",
-    phone: "01072384294",
-    birth_date: "2001-09-15",
-    profile_picture: "/2.jpg",
-    bio: "I'm a passionate developer with experience in full-stack web development, particularly using React, Node.js, and MongoDB. I enjoy building user-friendly applications and constantly learning new technologies. I also love contributing to open-source projects and collaborating with diverse teams.",
-  });
+  const [user, setUser] = useState(null); // Initialize user as null
+  const [loading, setLoading] = useState(true); // Loading state
+  const [error, setError] = useState(null); // Error state
 
-  // useEffect(() => {
-  // }, []);
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const token = localStorage.getItem("token"); // Retrieve token from localStorage
+
+      if (!token) {
+        setError("No token found. Please log in.");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const response = await axios.get(
+          `${VITE_SERVER_URL}/account/profile/`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // Pass token in Authorization header
+            },
+          }
+        );
+
+        console.log("User data fetched:", response.data);
+        setUser(response.data); // Set user data from the response
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching user data:", err);
+        setError("Failed to fetch user data. Please try again.");
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   function onUpdateUser(updatedUser) {
     setUser((prevUser) => ({ ...prevUser, ...updatedUser }));
@@ -34,6 +59,28 @@ function Profile() {
 
   const projectImage = "/3.jpg";
 
+  if (loading) {
+    return (
+      <Container maxWidth="lg">
+        <Box py={4} textAlign="center">
+          <Typography variant="h6">Loading...</Typography>
+        </Box>
+      </Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container maxWidth="lg">
+        <Box py={4} textAlign="center">
+          <Typography variant="h6" color="error">
+            {error}
+          </Typography>
+        </Box>
+      </Container>
+    );
+  }
+
   return (
     <Container maxWidth="lg">
       <Box py={4}>
@@ -44,7 +91,7 @@ function Profile() {
           alignItems="flex-start"
         >
           {/* Profile Section */}
-          <Box sx={{ width: { xs: "100%", md: "25%" }, flexShrink: 0 }}>
+          <Box sx={{ width: { xs: "100%", md: "30%" }, flexShrink: 0 }}>
             <ProfileCard user={user} onUpdateUser={onUpdateUser} />
           </Box>
 

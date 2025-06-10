@@ -1,22 +1,11 @@
+import React, { useState } from "react";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SettingsIcon from "@mui/icons-material/Settings";
-import {
-  Box,
-  Card,
-  Divider,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  TextField,
-  CardContent,
-  CardMedia,
-} from "@mui/material";
+import { Box, Card, Divider, CardContent, CardMedia } from "@mui/material";
 import Typography from "@mui/material/Typography";
-import { useState } from "react";
+import SettingsDialog from "./SettingsDialog";
 
 function ProfileCard(props) {
   const { user, onUpdateUser } = props;
@@ -188,112 +177,13 @@ function ProfileCard(props) {
       </CardContent>
 
       {/* Settings Dialog */}
-      <Dialog open={openSettings} onClose={handleCloseSettings}>
-        <DialogTitle sx={{ color: "#4A2F8F", fontWeight: 600 }}>
-          Account Settings
-        </DialogTitle>
-        <DialogContent>
-          <Box sx={{ display: "flex", flexDirection: "row", gap: 2, mb: 2 }}>
-            <TextField
-              autoFocus
-              margin="dense"
-              name="first_name"
-              label="First Name"
-              type="text"
-              fullWidth
-              variant="outlined"
-              value={formData.first_name}
-              onChange={handleInputChange}
-            />
-            <TextField
-              margin="dense"
-              name="last_name"
-              label="Last Name"
-              type="text"
-              fullWidth
-              variant="outlined"
-              value={formData.last_name}
-              onChange={handleInputChange}
-            />
-          </Box>
-          <TextField
-            margin="dense"
-            name="profile_picture"
-            label="Profile Picture URL"
-            type="url"
-            fullWidth
-            variant="outlined"
-            value={formData.profile_picture}
-            onChange={handleInputChange}
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            margin="dense"
-            name="bio"
-            label="Bio"
-            type="text"
-            fullWidth
-            variant="outlined"
-            multiline
-            rows={3}
-            value={formData.bio}
-            onChange={handleInputChange}
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            margin="dense"
-            name="address"
-            label="Address"
-            type="text"
-            fullWidth
-            variant="outlined"
-            value={formData.address}
-            onChange={handleInputChange}
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            margin="dense"
-            name="birth_date"
-            label="Birth Date"
-            type="date"
-            fullWidth
-            variant="outlined"
-            value={formData.birth_date}
-            onChange={handleInputChange}
-            sx={{ mb: 2 }}
-            slotProps={{
-              inputLabel: {
-                shrink: true,
-              },
-            }}
-          />
-          <TextField
-            margin="dense"
-            name="phone"
-            label="Phone"
-            type="tel"
-            fullWidth
-            variant="outlined"
-            value={formData.phone}
-            onChange={handleInputChange}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseSettings} sx={{ color: "#4A2F8F" }}>
-            Cancel
-          </Button>
-          <Button
-            onClick={handleSaveSettings}
-            variant="contained"
-            sx={{
-              backgroundColor: "#4A2F8F",
-              "&:hover": { backgroundColor: "#3a226f" },
-            }}
-          >
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <SettingsDialog
+        open={openSettings}
+        onClose={handleCloseSettings}
+        onSave={handleSaveSettings}
+        formData={formData}
+        onInputChange={handleInputChange}
+      />
     </Card>
   );
 }
