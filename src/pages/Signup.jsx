@@ -1,218 +1,105 @@
-import * as React from "react";
-import {
-  Box,
-  Button,
-  Checkbox,
-  CssBaseline,
-  Divider,
-  FormControlLabel,
-  FormLabel,
-  FormControl,
-  Link,
-  TextField,
-  Typography,
-  Card as MuiCard,
-} from "@mui/material";
-import { styled } from "@mui/material/styles";
-import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
+import { useState } from "react";
+import ConfirmDialog from "../components/ConfirmDialog";
+import { Box, Container, Paper, Stack, Avatar } from "@mui/material";
+import SignupForm from "../components/SignupForm";
 
-const FullPageContainer = styled("div")(({ theme }) => ({
-  display: "flex",
-  flexDirection: "row",
-  width: "100%",
-  height: "auto",
-  overflow: "hidden",
-  [theme.breakpoints.down("sm")]: {
-    flexDirection: "column",
-    height: "auto",
-  },
-}));
+function Signup() {
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
-const LeftSide = styled("div")(({ theme }) => ({
-  flex: 1,
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  backgroundColor: "#a084e8",
-  [theme.breakpoints.down("sm")]: {
-    height: "250px",
-  },
-}));
+  const handleConfirm = () => {
+    setConfirmOpen(false);
+    window.location.href = "/signin";
+  };
 
-const RightSide = styled("div")(({ theme }) => ({
-  flex: 1,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  backgroundColor: "#fff",
-  padding: theme.spacing(4),
-}));
-
-const Card = styled(MuiCard)(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  width: "100%",
-  maxWidth: "500px",
-  padding: theme.spacing(4),
-  gap: theme.spacing(2),
-  borderRadius: "20px",
-  background: "#fff",
-  boxShadow: "0 8px 20px rgba(0, 0, 0, 0.2)",
-  color: "#000",
-}));
-
-const RoundedTextField = styled(TextField)(({ theme }) => ({
-  "& .MuiInputBase-root": {
-    borderRadius: "10px",
-    backgroundColor: "#f9f9f9",
-  },
-}));
-
-export default function SignUp() {
   return (
-    <>
-      <CssBaseline />
-      <FullPageContainer>
-        <LeftSide>
-          <Box
-            component="img"
-            src="/rafiq4.png"
-            alt="Illustration"
-            sx={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              maxHeight: { xs: "250px", sm: "100%" },
-            }}
-          />
-        </LeftSide>
-
-        <RightSide>
-          <Card>
-            <Typography
-              component="h1"
-              variant="h4"
-              sx={{
-                fontWeight: "bold",
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
-                color: "#a084e8",
-              }}
-            >
-              Rafiq{" "}
-              <VolunteerActivismIcon
-                fontSize="large"
-                sx={{ color: "#a084e8" }}
-              />
-            </Typography>
-
+    <Box
+      sx={{
+        minHeight: "100vh",
+        width: "100vw",
+        bgcolor: "#f5f5fa",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        p: 0,
+        m: 0,
+      }}
+    >
+      <Container
+        component="main"
+        maxWidth="lg"
+        disableGutters
+        sx={{
+          display: "flex",
+          alignItems: "stretch",
+          justifyContent: "center",
+          height: "100vh",
+          minWidth: "100vw",
+          p: 0,
+        }}
+      >
+        <Paper
+          elevation={3}
+          sx={{
+            borderRadius: 0,
+            flexGrow: 1,
+            width: "100vw",
+            height: "100vh",
+            overflow: "hidden",
+            display: "flex",
+          }}
+        >
+          <Stack direction="row" sx={{ height: "100%", width: "100%" }}>
             <Box
-              component="form"
               sx={{
-                width: "100%",
-                display: "flex",
-                flexDirection: "column",
-                gap: 2,
+                width: "50%",
+                display: { xs: "none", md: "block" },
+                position: "relative",
+                height: "100vh",
               }}
             >
-              <FormControl>
-                <FormLabel>First Name</FormLabel>
-                <RoundedTextField fullWidth placeholder="First Name" />
-              </FormControl>
-
-              <FormControl>
-                <FormLabel>Last Name</FormLabel>
-                <RoundedTextField fullWidth placeholder="Last Name" />
-              </FormControl>
-
-              <FormControl>
-                <FormLabel>Username</FormLabel>
-                <RoundedTextField fullWidth placeholder="Username" />
-              </FormControl>
-
-              <FormControl>
-                <FormLabel>Email</FormLabel>
-                <RoundedTextField
-                  fullWidth
-                  placeholder="Enter your@email.com"
-                />
-              </FormControl>
-
-              <FormControl>
-                <FormLabel>Password</FormLabel>
-                <RoundedTextField
-                  fullWidth
-                  type="password"
-                  placeholder="Enter your password"
-                />
-              </FormControl>
-
-              <FormControl>
-                <FormLabel>Confirm Password</FormLabel>
-                <RoundedTextField
-                  fullWidth
-                  type="password"
-                  placeholder="Confirm your password"
-                />
-              </FormControl>
-
-              <FormControl>
-                <FormLabel>Phone Number</FormLabel>
-                <RoundedTextField
-                  fullWidth
-                  type="tel"
-                  placeholder="Enter your phone number"
-                />
-              </FormControl>
-
-              <FormControl>
-                <FormLabel>Upload Profile Image</FormLabel>
-                <RoundedTextField
-                  fullWidth
-                  type="file"
-                  inputProps={{ accept: "image/*" }}
-                />
-              </FormControl>
-
-              <FormControlLabel
-                control={<Checkbox sx={{ color: "#a084e8" }} />}
-                label="I want to receive updates via email."
-              />
-
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
+              <Avatar
+                src="/signup.jpg"
+                variant="square"
                 sx={{
-                  mt: 2,
-                  borderRadius: "12px",
-                  fontWeight: "bold",
-                  background: "#a084e8",
-                  color: "#fff",
-                  "&:hover": {
-                    background: "#9370db",
-                  },
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  zIndex: 1,
+                  opacity: 0.7,
                 }}
-              >
-                Register
-              </Button>
+              />
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "100%",
+                  background:
+                    "linear-gradient(135deg,#7b5fc996 0%, #4a2f8f 100%)",
+                  opacity: 0.6,
+                  zIndex: 2,
+                }}
+              />
             </Box>
 
-            <Divider>
-              <Typography>or</Typography>
-            </Divider>
-
-            <Typography variant="body2">
-              Already have an account?{" "}
-              <Link href="/signin" underline="hover" sx={{ color: "#a084e8" }}>
-                Sign in
-              </Link>
-            </Typography>
-          </Card>
-        </RightSide>
-      </FullPageContainer>
-    </>
+            {/* Form Section */}
+            <SignupForm setConfirmOpen={setConfirmOpen} />
+          </Stack>
+        </Paper>
+      </Container>
+      <ConfirmDialog
+        open={confirmOpen}
+        title="Confirm Your Email"
+        description="A confirmation link was sent to your email—please check your inbox and click the link to verify."
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleConfirm}
+      />
+    </Box>
   );
 }
+
+export default Signup;

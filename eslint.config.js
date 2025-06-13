@@ -3,6 +3,7 @@ import react from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
 import prettier from "eslint-plugin-prettier";
 import importPlugin from "eslint-plugin-import";
+import globals from "globals";
 
 export default [
   js.configs.recommended,
@@ -11,13 +12,11 @@ export default [
     languageOptions: {
       ecmaVersion: 2021,
       sourceType: "module",
-      globals: {
-        browser: true,
-        node: true,
-        document: true,
-      },
       parserOptions: {
         ecmaFeatures: { jsx: true },
+      },
+      globals: {
+        ...globals.browser,
       },
     },
     plugins: {
@@ -27,7 +26,7 @@ export default [
       prettier,
     },
     rules: {
-      // Formatting (handled by Prettier)
+      // formatting
       indent: "off",
       quotes: "off",
       semi: ["error", "always"],
@@ -36,20 +35,20 @@ export default [
       "arrow-spacing": "off",
       "arrow-parens": "off",
 
-      // JavaScript best practices
+      // best practices
       "no-console": "off",
-      "no-var": ["error"],
-      "prefer-const": ["error"],
-      "no-unused-vars": ["off"],
+      "no-var": "error",
+      "prefer-const": "error",
+      "no-unused-vars": "off",
       eqeqeq: ["error", "always"],
 
-      // Import rules
-      "import/no-unresolved": ["error"],
+      // import
+      "import/no-unresolved": "error",
       "import/prefer-default-export": "off",
 
-      // React rules
+      // react
       "react/prop-types": "off",
-      "react/jsx-filename-extension": [1, { extensions: [".jsx"] }],
+      "react/jsx-filename-extension": ["warn", { extensions: [".jsx"] }],
       "react/jsx-uses-react": "off",
       "react/react-in-jsx-scope": "off",
       "react/jsx-props-no-spreading": "off",
@@ -58,10 +57,10 @@ export default [
         { namedComponents: "function-declaration" },
       ],
 
-      // React Hooks rules
+      // react hooks
       ...reactHooks.configs.recommended.rules,
 
-      // Prettier
+      // prettier
       "prettier/prettier": ["error", { arrowParens: "always" }],
     },
     settings: {
@@ -79,3 +78,4 @@ export default [
     ignores: ["node_modules/", "dist/", "build/", "coverage/"],
   },
 ];
+

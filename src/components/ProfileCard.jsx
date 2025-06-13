@@ -1,13 +1,51 @@
+import React, { useState } from "react";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import { Box, Card, Divider } from "@mui/material";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
+import SettingsIcon from "@mui/icons-material/Settings";
+import { Box, Card, Divider, CardContent, CardMedia } from "@mui/material";
 import Typography from "@mui/material/Typography";
+import SettingsDialog from "./SettingsDialog";
 
 function ProfileCard(props) {
-  const { user } = props;
+  const { user, onUpdateUser } = props;
+  const [openSettings, setOpenSettings] = useState(false);
+  const [formData, setFormData] = useState({
+    first_name: user.first_name || "",
+    last_name: user.last_name || "",
+    profile_picture: user.profile_picture || "",
+    bio: user.bio || "",
+    address: user.address || "",
+    birth_date: user.birth_date || "",
+    phone: user.phone || "",
+  });
+
+  const handleOpenSettings = () => {
+    setOpenSettings(true);
+  };
+
+  const handleCloseSettings = () => {
+    setOpenSettings(false);
+    setFormData({
+      first_name: user.first_name || "",
+      last_name: user.last_name || "",
+      profile_picture: user.profile_picture || "",
+      bio: user.bio || "",
+      address: user.address || "",
+      birth_date: user.birth_date || "",
+      phone: user.phone || "",
+    });
+  };
+
+  const handleSaveSettings = () => {
+    onUpdateUser(formData);
+    setOpenSettings(false);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   return (
     <Card
@@ -23,6 +61,17 @@ function ProfileCard(props) {
         overflow: "hidden",
       }}
     >
+      <SettingsIcon
+        sx={{
+          position: "absolute",
+          top: 8,
+          left: 8,
+          color: "#4A2F8F",
+          cursor: "pointer",
+          "&:hover": { color: "#3a226f" },
+        }}
+        onClick={handleOpenSettings}
+      />
       <Box
         sx={{
           width: 80,
@@ -39,11 +88,11 @@ function ProfileCard(props) {
           position: "relative",
         }}
       >
-        {user.image ? (
+        {user.profile_picture ? (
           <CardMedia
             sx={{ height: 80, width: 80, objectFit: "cover" }}
-            image={user.image}
-            title={user.name}
+            image={user.profile_picture}
+            title={`${user.first_name} ${user.last_name}`}
           />
         ) : (
           <AccountCircleIcon fontSize="large" sx={{ color: "white" }} />
@@ -74,7 +123,7 @@ function ProfileCard(props) {
             letterSpacing: "0.5px",
           }}
         >
-          {user.name}
+          {`${user.first_name} ${user.last_name}`.trim()}
         </Typography>
         <Divider
           sx={{
@@ -119,13 +168,22 @@ function ProfileCard(props) {
                     color: "text.secondary",
                   }}
                 >
-                  {item.value}
+                  {item.value || "Not provided"}
                 </Typography>
               </Box>
             </ListItem>
           ))}
         </List>
       </CardContent>
+
+      {/* Settings Dialog */}
+      <SettingsDialog
+        open={openSettings}
+        onClose={handleCloseSettings}
+        onSave={handleSaveSettings}
+        formData={formData}
+        onInputChange={handleInputChange}
+      />
     </Card>
   );
 }

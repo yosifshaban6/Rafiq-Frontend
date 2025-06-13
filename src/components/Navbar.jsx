@@ -18,13 +18,11 @@ import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
 import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate } from "react-router-dom";
 
-const user = { name: 'Yomna' }; // Change to { name: 'Yomna' } to simulate login
-
-const pages = (user) => [
+const pages = (isAuthenticated) => [
   { name: "Home", path: "/" },
   { name: "About Us", path: "/about" },
   { name: "Projects", path: "/allproject" },
-  ...(user ? [{ name: "Create New Project", path: "/create" }] : []),
+  ...(isAuthenticated ? [{ name: "Create New Project", path: "/create" }] : []),
   { name: "Contact Us", path: "/contact" },
 ];
 
@@ -68,6 +66,10 @@ function ResponsiveAppBar() {
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const navigate = useNavigate();
 
+  // Retrieve token from localStorage
+  const token = localStorage.getItem("token");
+  const isAuthenticated = Boolean(token);
+
   const handleOpenNavMenu = (event) => setAnchorElNav(event.currentTarget);
   const handleOpenUserMenu = (event) => setAnchorElUser(event.currentTarget);
   const handleCloseNavMenu = () => setAnchorElNav(null);
@@ -78,8 +80,17 @@ function ResponsiveAppBar() {
     handleCloseNavMenu();
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/signin");
+  };
+
   const handleSettingClick = (path) => {
-    navigate(path);
+    if (path === "/logout") {
+      handleLogout();
+    } else {
+      navigate(path);
+    }
     handleCloseUserMenu();
   };
 
@@ -189,7 +200,7 @@ function ResponsiveAppBar() {
                 ml: 2,
               }}
             >
-              {pages(user).map((page) => (
+              {pages(isAuthenticated).map((page) => (
                 <Button
                   key={page.name}
                   onClick={() => handleNavClick(page.path)}
@@ -229,7 +240,7 @@ function ResponsiveAppBar() {
                 gap: 1,
               }}
             >
-              {user ? (
+              {isAuthenticated ? (
                 <>
                   <Tooltip title="User Menu">
                     <IconButton
