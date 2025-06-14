@@ -12,15 +12,18 @@ import {
   Tooltip,
   MenuItem,
   InputBase,
+  Drawer,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
 import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
+const VITE_SERVER_URL =
+  import.meta.env.VITE_SERVER_URL || "http://localhost:8000";
 
 const pages = (isAuthenticated) => [
-  { name: "Home", path: "/" },
-  { name: "About Us", path: "/about" },
   { name: "Projects", path: "/allproject" },
   ...(isAuthenticated ? [{ name: "Create New Project", path: "/create" }] : []),
   { name: "Contact Us", path: "/contact" },
@@ -68,7 +71,31 @@ function ResponsiveAppBar() {
 
   // Retrieve token from localStorage
   const token = localStorage.getItem("token");
-  const isAuthenticated = Boolean(token);
+  const isAuthenticated = Boolean(token !== "undefined" && token !== null);
+  const [profileImage, setProfileImage] = React.useState(() =>
+    localStorage.getItem("profileImage")
+  );
+
+  React.useEffect(() => {
+    if (profileImage) {
+      localStorage.setItem("profileImage", profileImage);
+    }
+  }, [profileImage]);
+
+  React.useEffect(() => {
+    if (isAuthenticated && !profileImage) {
+      axios
+        .get(`${VITE_SERVER_URL}/account/profile/`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((res) => {
+          if (res.data && res.data.profile_picture) {
+            setProfileImage(res.data.profile_picture);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [isAuthenticated, profileImage, token]);
 
   const handleOpenNavMenu = (event) => setAnchorElNav(event.currentTarget);
   const handleOpenUserMenu = (event) => setAnchorElUser(event.currentTarget);
@@ -100,22 +127,26 @@ function ResponsiveAppBar() {
         display: "flex",
         justifyContent: "center",
         width: "100%",
-        p: 2,
+        p: { xs: 0, md: 2 },
         bgcolor: "none",
       }}
     >
       <AppBar
         position="static"
         sx={{
-          bgcolor: "#a084e8",
+          bgcolor: "#4a2f8f",
           height: 48,
-          borderRadius: 8,
-          maxWidth: "lg",
+          borderRadius: { xs: 0, md: 8 },
           width: "100%",
           boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
+          maxWidth: { xs: "100%", sm: "100%", md: "lg" },
+          mx: "auto",
         }}
       >
-        <Container maxWidth="lg">
+        <Container
+          maxWidth={false}
+          sx={{ px: { md: 3 }, maxWidth: { md: "lg" } }}
+        >
           <Toolbar
             disableGutters
             sx={{
@@ -123,7 +154,7 @@ function ResponsiveAppBar() {
               minHeight: "48px !important",
             }}
           >
-            {/* Mobile Menu */}
+            {/* Mobile Side Drawer */}
             <Box
               sx={{ display: { xs: "flex", md: "none" }, alignItems: "center" }}
             >
@@ -135,9 +166,84 @@ function ResponsiveAppBar() {
               >
                 <MenuIcon fontSize="small" />
               </IconButton>
+              <Menu
+                anchorEl={anchorElNav}
+                open={false}
+                onClose={handleCloseNavMenu}
+                sx={{ display: "none" }}
+              />
+              <Drawer
+                anchor="left"
+                open={Boolean(anchorElNav)}
+                onClose={handleCloseNavMenu}
+                slotProps={{
+                  paper: {
+                    sx: {
+                      width: 220,
+                      bgcolor: "#fff",
+                      color: "#4a2f8f",
+                      pt: 2,
+                    },
+                  },
+                }}
+              >
+                <Box sx={{ px: 2, pb: 2 }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      mb: 2,
+                    }}
+                  >
+                    <VolunteerActivismIcon sx={{ mr: 1, fontSize: "1.2rem" }} />
+                    <Typography
+                      variant="h6"
+                      noWrap
+                      component="a"
+                      onClick={() => {
+                        navigate("/");
+                        handleCloseNavMenu();
+                      }}
+                      sx={{
+                        cursor: "pointer",
+                        fontFamily: "monospace",
+                        fontWeight: 700,
+                        color: "#4a2f8f",
+                        textDecoration: "none",
+                        fontSize: "1.1rem",
+                      }}
+                    >
+                      Rafiq
+                    </Typography>
+                  </Box>
+                  {pages(isAuthenticated).map((page) => (
+                    <MenuItem
+                      key={page.name}
+                      onClick={() => {
+                        handleNavClick(page.path);
+                        handleCloseNavMenu();
+                      }}
+                      sx={{
+                        borderRadius: 1,
+                        py: 0.75,
+                        mb: 0.5,
+                        "&:hover": {
+                          bgcolor: "rgba(74, 47, 143, 0.08)",
+                        },
+                      }}
+                    >
+                      <Typography
+                        textAlign="center"
+                        fontSize="0.95rem"
+                        sx={{ width: "100%" }}
+                      >
+                        {page.name}
+                      </Typography>
+                    </MenuItem>
+                  ))}
+                </Box>
+              </Drawer>
             </Box>
-
-            {/* Logo */}
             <Box
               sx={{
                 display: { xs: "flex", md: "none" },
@@ -183,7 +289,7 @@ function ResponsiveAppBar() {
                   fontWeight: 700,
                   color: "inherit",
                   textDecoration: "none",
-                  fontSize: "1.1rem",
+                  fontSize: "1.2rem",
                 }}
               >
                 Rafiq
@@ -255,7 +361,7 @@ function ResponsiveAppBar() {
                     >
                       <Avatar
                         alt="User"
-                        src="/8.jpg"
+                        src={profileImage}
                         sx={{
                           width: 32,
                           height: 32,
@@ -301,6 +407,8 @@ function ResponsiveAppBar() {
                       color: "#fff",
                       borderColor: "#fff",
                       fontSize: "0.8rem",
+                      borderRadius: 2,
+                      p: "4px 20px",
                       "&:hover": {
                         bgcolor: "rgba(255,255,255,0.1)",
                       },
@@ -315,7 +423,9 @@ function ResponsiveAppBar() {
                     sx={{
                       fontSize: "0.8rem",
                       bgcolor: "#fff",
-                      color: "#a084e8",
+                      color: "#4a2f8f",
+                      borderRadius: 2,
+                      p: "4px 20px",
                       "&:hover": {
                         bgcolor: "#f0f0f0",
                       },

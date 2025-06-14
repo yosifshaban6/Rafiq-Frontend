@@ -25,7 +25,7 @@ function AppRouter() {
           <Route path="/reset" element={<ResetPass />} />
           <Route path="/forget" element={<ForgetPassword />} />
           <Route path="/allproject" element={<ProjectList />} />
-          <Route path="/projectdetails" element={<ProjectDetails />} />
+          <Route path="/posts/:id" element={<ProjectDetails />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/create" element={<CreateProject />} />
           <Route path="/edit" element={<EditProject />} />
