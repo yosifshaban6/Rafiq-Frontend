@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Grid,
@@ -12,6 +12,7 @@ import {
   Rating,
   TextField,
   Divider,
+  Avatar,
 } from "@mui/material";
 
 const project = {
@@ -26,7 +27,29 @@ const project = {
 };
 
 export default function Projectdetails() {
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState("");
+  const [authorName, setAuthorName] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState("");
+
   const progress = Math.floor((project.raised / project.goal) * 100);
+
+  const handleCommentSubmit = () => {
+    if (newComment.trim() && authorName.trim()) {
+      setComments([
+        ...comments,
+        {
+          name: authorName,
+          comment: newComment,
+          avatar: avatarUrl || "https://via.placeholder.com/40",
+        },
+      ]);
+      setNewComment("");
+      setAuthorName("");
+      setAvatarUrl("");
+    }
+  };
+
   return (
     <Box p={3}>
       <Box
@@ -44,7 +67,7 @@ export default function Projectdetails() {
             flexDirection: { xs: "column", md: "row" },
           }}
         >
-          {/* الكارد الكبير على الشمال */}
+          {/* Left Side */}
           <Box flex={2}>
             <Card>
               <Typography variant="h4" gutterBottom>
@@ -74,6 +97,8 @@ export default function Projectdetails() {
                 <Rating value={project.rating} precision={0.5} readOnly />
               </CardContent>
             </Card>
+
+            {/* Recommended Projects */}
             <Box mt={5} mb={2}>
               <Typography textAlign="center" variant="h6" gutterBottom>
                 Recommended Projects
@@ -114,8 +139,9 @@ export default function Projectdetails() {
             </Box>
           </Box>
 
-          {/* الكروتين فوق بعض على اليمين */}
+          {/* Right Side */}
           <Box flex={1} display="flex" flexDirection="column" gap={4}>
+            {/* Funding Card */}
             <Card>
               <CardContent>
                 <Typography variant="h6">Funding Details</Typography>
@@ -136,7 +162,6 @@ export default function Projectdetails() {
                     },
                   }}
                 />
-
                 <Box
                   textAlign="center"
                   display="flex"
@@ -144,7 +169,7 @@ export default function Projectdetails() {
                   alignItems="center"
                 >
                   <Typography variant="subtitle1" gutterBottom>
-                    4.5
+                    {project.rating}
                   </Typography>
                   <Rating value={project.rating} precision={0.5} readOnly />
                 </Box>
@@ -169,21 +194,45 @@ export default function Projectdetails() {
               </CardContent>
             </Card>
 
+            {/* Comment Form */}
             <Card>
               <CardContent>
                 <Typography variant="h6" gutterBottom>
                   Leave a Comment
                 </Typography>
+
                 <TextField
-                  label="Your comment"
+                  label="Your Name"
+                  fullWidth
+                  variant="outlined"
+                  sx={{ mb: 2 }}
+                  value={authorName}
+                  onChange={(e) => setAuthorName(e.target.value)}
+                />
+
+                <TextField
+                  label="Avatar URL (optional)"
+                  fullWidth
+                  variant="outlined"
+                  sx={{ mb: 2 }}
+                  value={avatarUrl}
+                  onChange={(e) => setAvatarUrl(e.target.value)}
+                />
+
+                <TextField
+                  label="Your Comment"
                   multiline
                   rows={3}
                   fullWidth
                   variant="outlined"
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
                 />
+
                 <Button
                   fullWidth
                   variant="contained"
+                  onClick={handleCommentSubmit}
                   sx={{
                     mt: 2,
                     backgroundImage:
@@ -201,6 +250,30 @@ export default function Projectdetails() {
                 </Button>
               </CardContent>
             </Card>
+
+            {/* Display Comments */}
+            {comments.length > 0 && (
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    Comments
+                  </Typography>
+                  {comments.map((item, i) => (
+                    <Box key={i} display="flex" alignItems="center" mb={2}>
+                      <Avatar
+                        src={item.avatar}
+                        alt={item.name}
+                        sx={{ width: 40, height: 40, mr: 2 }}
+                      />
+                      <Box>
+                        <Typography variant="subtitle2">{item.name}</Typography>
+                        <Typography variant="body2">{item.comment}</Typography>
+                      </Box>
+                    </Box>
+                  ))}
+                </CardContent>
+              </Card>
+            )}
           </Box>
         </Box>
       </Box>
