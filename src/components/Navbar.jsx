@@ -64,7 +64,7 @@ const inputStyle = {
   fontSize: "0.9rem",
 };
 
-function ResponsiveAppBar() {
+function Navbar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const navigate = useNavigate();
@@ -134,19 +134,22 @@ function ResponsiveAppBar() {
       <AppBar
         position="static"
         sx={{
+          p: { xs: 0.5 },
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
           bgcolor: "#4a2f8f",
-          height: 48,
           borderRadius: { xs: 0, md: 8 },
           width: "100%",
           boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
-          maxWidth: { xs: "100%", sm: "100%", md: "lg" },
+          maxWidth: { xs: "100%", sm: "100%", md: "1500px" }, // Increased maxWidth
           mx: "auto",
         }}
       >
-        <Container
-          maxWidth={false}
-          sx={{ px: { md: 3 }, maxWidth: { md: "lg" } }}
-        >
+        <Container maxWidth={false} sx={{ px: { xs: 2, md: 3 } }}>
+          {" "}
+          {/* Adjusted container padding */}
           <Toolbar
             disableGutters
             sx={{
@@ -443,4 +446,4 @@ function ResponsiveAppBar() {
   );
 }
 
-export default ResponsiveAppBar;
+export default Navbar;

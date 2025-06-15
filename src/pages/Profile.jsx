@@ -82,7 +82,7 @@ function Profile() {
   }
 
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="xl">
       <Box py={4}>
         <Box
           display="flex"
