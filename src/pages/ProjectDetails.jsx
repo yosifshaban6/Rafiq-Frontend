@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router";
+import axios from "axios";
 import {
   Box,
   Grid,
@@ -13,145 +15,272 @@ import {
   TextField,
   Divider,
   Avatar,
+  CircularProgress,
+  Alert,
+  IconButton,
+  Container,
 } from "@mui/material";
+import { ArrowBack, ArrowForward } from "@mui/icons-material";
+import RecommendedProjects from "../components/RecommendedProjects";
+import { jwtDecode } from "jwt-decode";
 
-const project = {
-  title: "Eco-Friendly Water Bottles",
-  image: "/2.jpg",
-  description:
-    "Join us in making the world greener by supporting our reusable bottle initiative. Every dollar helps reduce plastic waste and promote sustainability.Join us in making the world greener by supporting our reusable bottle initiative. Every dollar helps reduce plastic waste and promote sustainability.",
-  raised: 7500,
-  goal: 10000,
-  tags: ["Eco", "Sustainability", "Reusable"],
-  rating: 4.5,
-};
+const VITE_SERVER_URL =
+  import.meta.env.VITE_SERVER_URL || "http://localhost:8000";
 
-export default function Projectdetails() {
+const token = localStorage.getItem("token");
+
+export default function ProjectDetails() {
+  const user = token ? jwtDecode(token) : null;
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [project, setProject] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
-  const [authorName, setAuthorName] = useState("");
-  const [avatarUrl, setAvatarUrl] = useState("");
+  const [commentLoading, setCommentLoading] = useState(false);
+  const [commentError, setCommentError] = useState(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  const progress = Math.floor((project.raised / project.goal) * 100);
+  useEffect(() => {
+    const fetchProjectAndComments = async () => {
+      try {
+        setLoading(true);
+        // Fetch project details
+        const projectResponse = await axios.get(
+          `${VITE_SERVER_URL}/funding/posts/${id}/`
+        );
+        setProject(projectResponse.data);
+        setComments(projectResponse.data.comments || []);
+        console.log("Project data fetched:", projectResponse.data);
+      } catch (err) {
+        console.error("Failed to fetch project or comments:", err);
+        setError("Failed to load project details. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleCommentSubmit = () => {
-    if (newComment.trim() && authorName.trim()) {
-      setComments([
-        ...comments,
+    fetchProjectAndComments();
+  }, [id]);
+
+  const progress = project
+    ? Math.floor((project.current_amount / project.goal_amount) * 100)
+    : 0;
+
+  const handleCommentSubmit = async () => {
+    if (!newComment.trim()) {
+      setCommentError("Comment cannot be empty");
+      return;
+    }
+
+    if (!user) {
+      setCommentError("You need to be logged in to comment");
+      return;
+    }
+
+    try {
+      setCommentLoading(true);
+      setCommentError(null);
+
+      const response = await axios.post(
+        `${VITE_SERVER_URL}/funding/comments/`,
         {
-          name: authorName,
-          comment: newComment,
-          avatar: avatarUrl || "https://via.placeholder.com/40",
+          post: id,
+          content: newComment,
         },
-      ]);
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      // Add the new comment to the list
+      setComments([response.data, ...comments]);
       setNewComment("");
-      setAuthorName("");
-      setAvatarUrl("");
+    } catch (err) {
+      console.error("Failed to post comment:", err);
+      setCommentError("Failed to post comment. Please try again.");
+    } finally {
+      setCommentLoading(false);
     }
   };
 
-  return (
-    <Box p={3}>
+  const nextImage = () => {
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex === project.image_urls.length - 1 ? 0 : prevIndex + 1
+    );
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex === 0 ? project.image_urls.length - 1 : prevIndex - 1
+    );
+  };
+
+  if (loading) {
+    return (
       <Box
-        mt={5}
-        mb={5}
         display="flex"
         justifyContent="center"
-        sx={{ width: "100%", overflowX: "auto", px: 2 }}
+        alignItems="center"
+        minHeight="80vh"
       >
-        <Box
-          display="flex"
-          gap={4}
-          sx={{
-            width: "1200px",
-            flexDirection: { xs: "column", md: "row" },
-          }}
-        >
-          {/* Left Side */}
-          <Box flex={2}>
-            <Card>
-              <Typography variant="h4" gutterBottom>
-                {project.title}
-              </Typography>
+        <CircularProgress size={60} sx={{ color: "#7c3aed" }} />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box p={3} display="flex" justifyContent="center">
+        <Alert severity="error" sx={{ width: "100%", maxWidth: 600 }}>
+          {error}
+        </Alert>
+      </Box>
+    );
+  }
+
+  if (!project) {
+    return (
+      <Box p={3} display="flex" justifyContent="center">
+        <Alert severity="warning" sx={{ width: "100%", maxWidth: 600 }}>
+          Project not found
+        </Alert>
+      </Box>
+    );
+  }
+
+  // Check if the current user is the project author
+  const isProjectAuthor = user && project.author === user.username;
+
+  return (
+    <Container maxWidth="xl" sx={{ py: 3 }}>
+      {/* Main Content Row */}
+      <Grid container spacing={4}>
+        {/* Project Details Column - now 8 columns in md */}
+        <Grid item size={8}>
+          <Card>
+            <Typography variant="h4" gutterBottom sx={{ p: 3 }}>
+              {project.title}
+            </Typography>
+
+            {/* Image Slider */}
+            <Box sx={{ position: "relative", height: 400 }}>
               <CardMedia
                 component="img"
-                height="350"
-                image={project.image}
-                alt={project.title}
+                height="400"
+                image={project.image_urls[currentImageIndex].image}
+                alt={`${project.title} - Image ${currentImageIndex + 1}`}
+                sx={{ objectFit: "cover", width: "100%" }}
               />
-              <CardContent>
-                <Typography variant="h5" gutterBottom>
-                  Description :
-                </Typography>
-                <Typography variant="body1" paragraph>
-                  {project.description}
-                </Typography>
-                <Box mb={2}>
-                  {project.tags.map((tag, i) => (
-                    <Chip key={i} label={tag} sx={{ mr: 1 }} />
-                  ))}
-                </Box>
-                <Typography variant="subtitle1" gutterBottom>
-                  Rating:
-                </Typography>
-                <Rating value={project.rating} precision={0.5} readOnly />
-              </CardContent>
-            </Card>
 
-            {/* Recommended Projects */}
-            <Box mt={5} mb={2}>
-              <Typography textAlign="center" variant="h6" gutterBottom>
-                Recommended Projects
-              </Typography>
-              <Divider sx={{ mb: 2 }} />
-              <Grid container spacing={2}>
-                {[1, 2, 3, 4].map((_, i) => (
-                  <Grid item xs={12} sm={6} md={4} key={i}>
-                    <Card>
-                      <CardMedia component="img" height="140" image="/3.jpg" />
-                      <CardContent>
-                        <Typography variant="subtitle1">
-                          Sample Project {i + 1}
-                        </Typography>
-                        <Button
-                          fullWidth
-                          variant="contained"
-                          sx={{
-                            mt: 2,
-                            backgroundImage:
-                              "linear-gradient(135deg, #a084e8,rgb(202, 70, 174))",
-                            boxShadow: "none",
-                            textTransform: "none",
-                            fontWeight: "bold",
-                            "&:hover": {
-                              backgroundImage:
-                                "linear-gradient(135deg, #8668e1, #6b5fc7)",
-                            },
-                          }}
-                        >
-                          Read More
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  </Grid>
+              {/* Navigation Arrows */}
+              <IconButton
+                onClick={prevImage}
+                sx={{
+                  position: "absolute",
+                  left: "10px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  backgroundColor: "rgba(0,0,0,0.5)",
+                  color: "white",
+                  "&:hover": {
+                    backgroundColor: "rgba(0,0,0,0.7)",
+                  },
+                }}
+              >
+                <ArrowBack />
+              </IconButton>
+
+              <IconButton
+                onClick={nextImage}
+                sx={{
+                  position: "absolute",
+                  right: "10px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  backgroundColor: "rgba(0,0,0,0.5)",
+                  color: "white",
+                  "&:hover": {
+                    backgroundColor: "rgba(0,0,0,0.7)",
+                  },
+                }}
+              >
+                <ArrowForward />
+              </IconButton>
+
+              {/* Image Indicators */}
+              <Box
+                sx={{
+                  position: "absolute",
+                  bottom: 10,
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  display: "flex",
+                  gap: 1,
+                }}
+              >
+                {project.image_urls.map((_, index) => (
+                  <Box
+                    key={index}
+                    sx={{
+                      width: 10,
+                      height: 10,
+                      borderRadius: "50%",
+                      backgroundColor:
+                        index === currentImageIndex ? "#7c3aed" : "white",
+                      opacity: index === currentImageIndex ? 1 : 0.5,
+                      cursor: "pointer",
+                    }}
+                    onClick={() => setCurrentImageIndex(index)}
+                  />
                 ))}
-              </Grid>
+              </Box>
             </Box>
-          </Box>
 
-          {/* Right Side */}
-          <Box flex={1} display="flex" flexDirection="column" gap={4}>
-            {/* Funding Card */}
-            <Card>
+            <CardContent>
+              <Typography variant="h5" gutterBottom>
+                Description:
+              </Typography>
+              <Typography variant="body1" paragraph>
+                {project.content}
+              </Typography>
+              <Box mb={2}>
+                {project.tags.map((tag, i) => (
+                  <Chip key={i} label={tag.name} sx={{ mr: 1 }} />
+                ))}
+              </Box>
+              <Box display="flex" alignItems="center">
+                <Typography variant="subtitle1" mr={1}>
+                  Created by:
+                </Typography>
+                <Typography variant="body1">{project.author}</Typography>
+              </Box>
+              <Typography variant="subtitle1" gutterBottom>
+                Created on: {new Date(project.created_at).toLocaleDateString()}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Right Side Column (Funding and Comments) - now 4 columns in md */}
+        <Grid item size={4}>
+          {/* Funding Card - Only show if user is not the project author */}
+          {!isProjectAuthor && (
+            <Card sx={{ mb: 3 }}>
               <CardContent>
                 <Typography variant="h6">Funding Details</Typography>
                 <Typography variant="body2">
-                  Raised: ${project.raised} / ${project.goal}
+                  Raised: ${project.current_amount} / ${project.target_amount}
                 </Typography>
                 <LinearProgress
                   variant="determinate"
                   value={progress}
                   sx={{
+                    my: 2,
                     height: 10,
                     borderRadius: 5,
                     backgroundColor: "#e0e0e0",
@@ -162,17 +291,18 @@ export default function Projectdetails() {
                     },
                   }}
                 />
-                <Box
-                  textAlign="center"
-                  display="flex"
-                  flexDirection="column"
-                  alignItems="center"
-                >
-                  <Typography variant="subtitle1" gutterBottom>
-                    {project.rating}
-                  </Typography>
-                  <Rating value={project.rating} precision={0.5} readOnly />
-                </Box>
+                <TextField
+                  label="Amount to Fund"
+                  type="number"
+                  fullWidth
+                  variant="outlined"
+                  sx={{ mb: 2 }}
+                  InputProps={{
+                    startAdornment: (
+                      <Box sx={{ mr: 1, color: "#4b2997" }}>$</Box>
+                    ),
+                  }}
+                />
                 <Button
                   fullWidth
                   variant="contained"
@@ -193,90 +323,107 @@ export default function Projectdetails() {
                 </Button>
               </CardContent>
             </Card>
+          )}
 
-            {/* Comment Form */}
+          {/* Comment Form */}
+          <Card sx={{ mb: 3 }}>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Leave a Comment
+              </Typography>
+
+              {commentError && (
+                <Alert severity="error" sx={{ mb: 2 }}>
+                  {commentError}
+                </Alert>
+              )}
+
+              <TextField
+                label="Your Comment"
+                multiline
+                rows={3}
+                fullWidth
+                variant="outlined"
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                disabled={!user}
+                placeholder={!user ? "Please login to comment" : ""}
+              />
+
+              <Button
+                fullWidth
+                variant="contained"
+                onClick={handleCommentSubmit}
+                disabled={commentLoading || !user}
+                sx={{
+                  mt: 2,
+                  backgroundImage:
+                    "linear-gradient(135deg, #a084e8,rgb(202, 70, 174))",
+                  boxShadow: "none",
+                  textTransform: "none",
+                  fontWeight: "bold",
+                  "&:hover": {
+                    backgroundImage:
+                      "linear-gradient(135deg, #8668e1, #6b5fc7)",
+                  },
+                }}
+              >
+                {commentLoading ? (
+                  <CircularProgress size={24} color="inherit" />
+                ) : (
+                  "Submit"
+                )}
+              </Button>
+            </CardContent>
+          </Card>
+          {/* Display Comments */}
+          {comments.length > 0 && (
             <Card>
               <CardContent>
                 <Typography variant="h6" gutterBottom>
-                  Leave a Comment
+                  Comments ({comments.length})
                 </Typography>
-
-                <TextField
-                  label="Your Name"
-                  fullWidth
-                  variant="outlined"
-                  sx={{ mb: 2 }}
-                  value={authorName}
-                  onChange={(e) => setAuthorName(e.target.value)}
-                />
-
-                <TextField
-                  label="Avatar URL (optional)"
-                  fullWidth
-                  variant="outlined"
-                  sx={{ mb: 2 }}
-                  value={avatarUrl}
-                  onChange={(e) => setAvatarUrl(e.target.value)}
-                />
-
-                <TextField
-                  label="Your Comment"
-                  multiline
-                  rows={3}
-                  fullWidth
-                  variant="outlined"
-                  value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)}
-                />
-
-                <Button
-                  fullWidth
-                  variant="contained"
-                  onClick={handleCommentSubmit}
-                  sx={{
-                    mt: 2,
-                    backgroundImage:
-                      "linear-gradient(135deg, #a084e8,rgb(202, 70, 174))",
-                    boxShadow: "none",
-                    textTransform: "none",
-                    fontWeight: "bold",
-                    "&:hover": {
-                      backgroundImage:
-                        "linear-gradient(135deg, #8668e1, #6b5fc7)",
-                    },
-                  }}
-                >
-                  Submit
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Display Comments */}
-            {comments.length > 0 && (
-              <Card>
-                <CardContent>
-                  <Typography variant="h6" gutterBottom>
-                    Comments
-                  </Typography>
-                  {comments.map((item, i) => (
-                    <Box key={i} display="flex" alignItems="center" mb={2}>
+                {comments.map((comment) => (
+                  <Box key={comment.id} sx={{ mb: 3 }}>
+                    <Box display="flex" alignItems="center" mb={1}>
                       <Avatar
-                        src={item.avatar}
-                        alt={item.name}
-                        sx={{ width: 40, height: 40, mr: 2 }}
-                      />
+                        sx={{
+                          bgcolor: "#4b2997",
+                          width: 32,
+                          height: 32,
+                          mr: 1.5,
+                          fontSize: "0.875rem",
+                        }}
+                      >
+                        {comment.user?.charAt(0)?.toUpperCase() || "U"}
+                      </Avatar>
                       <Box>
-                        <Typography variant="subtitle2">{item.name}</Typography>
-                        <Typography variant="body2">{item.comment}</Typography>
+                        <Typography variant="subtitle2" sx={{ lineHeight: 1 }}>
+                          {comment.user || "Unknown User"}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {new Date(comment.created_at).toLocaleString()}
+                        </Typography>
                       </Box>
                     </Box>
-                  ))}
-                </CardContent>
-              </Card>
-            )}
-          </Box>
+                    <Typography variant="body2" sx={{ pl: 4.5 }}>
+                      {comment.content}
+                    </Typography>
+                    <Divider sx={{ mt: 2 }} />
+                  </Box>
+                ))}
+              </CardContent>
+            </Card>
+          )}
+        </Grid>
+      </Grid>
+
+      {/* Recommended Projects - Full width below the main row */}
+      {project && (
+        <Box mt={6}>
+          <RecommendedProjects project={project} />
         </Box>
-      </Box>
-    </Box>
+      )}
+    </Container>
   );
 }
