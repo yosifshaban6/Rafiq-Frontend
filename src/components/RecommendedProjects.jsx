@@ -62,7 +62,7 @@ export default function RecommendedProjects({ project }) {
           },
         });
 
-        const filteredPosts = response.data
+        const filteredPosts = response.data.results
           .filter((post) => post.id !== project.id)
           .slice(0, 6);
 

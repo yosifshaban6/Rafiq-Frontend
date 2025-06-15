@@ -58,7 +58,7 @@ function CreateProject() {
     axios
       .get(`${VITE_SERVER_URL}/funding/categories/`)
       .then((response) => {
-        setCategories(response.data);
+        setCategories(response.data.results);
         setLoading((prev) => ({ ...prev, categories: false }));
       })
       .catch((error) => {
@@ -70,7 +70,7 @@ function CreateProject() {
     axios
       .get(`${VITE_SERVER_URL}/funding/tags/`)
       .then((response) => {
-        setTags(response.data);
+        setTags(response.data.results);
         setLoading((prev) => ({ ...prev, tags: false }));
       })
       .catch((error) => {

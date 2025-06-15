@@ -13,7 +13,7 @@ import { useNavigate } from "react-router";
 
 function ProjectCard({ post }) {
   const navigate = useNavigate();
-
+  console.log(post);
   const handleCardClick = (postId) => {
     const isAuthenticated = localStorage.getItem("token");
     if (!isAuthenticated) {
@@ -44,6 +44,7 @@ function ProjectCard({ post }) {
       <CardHeader
         avatar={
           <Avatar
+            src={post.user_image || ""}
             sx={{
               bgcolor: "#4b2997",
               color: "#fff",

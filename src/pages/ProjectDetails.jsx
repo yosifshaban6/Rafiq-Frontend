@@ -41,6 +41,11 @@ export default function ProjectDetails() {
   const [commentLoading, setCommentLoading] = useState(false);
   const [commentError, setCommentError] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [donationAmount, setDonationAmount] = useState("");
+  const [fundingError, setFundingError] = useState(null);
+  const [fundingSuccess, setFundingSuccess] = useState(false);
+  const [fundingLoading, setFundingLoading] = useState(false);
+  const [donationMessage, setDonationMessage] = useState("");
 
   useEffect(() => {
     const fetchProjectAndComments = async () => {
@@ -65,8 +70,62 @@ export default function ProjectDetails() {
   }, [id]);
 
   const progress = project
-    ? Math.floor((project.current_amount / project.goal_amount) * 100)
+    ? Math.floor((project.current_amount / project.target_amount) * 100)
     : 0;
+
+  const handleFundingButton = async () => {
+    if (!donationAmount || isNaN(donationAmount) || donationAmount <= 0) {
+      setFundingError("Please enter a valid donation amount (minimum $1)");
+      return;
+    }
+
+    if (!user) {
+      setFundingError("You need to be logged in to fund a project");
+      return;
+    }
+
+    try {
+      setFundingLoading(true);
+      setFundingError(null);
+      setFundingSuccess(false);
+
+      await axios.post(
+        `${VITE_SERVER_URL}/funding/donations/`,
+        {
+          post: parseInt(id),
+          amount: parseFloat(donationAmount),
+          message: donationMessage,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      // Update the project data with the new funding amount
+      const updatedProjectResponse = await axios.get(
+        `${VITE_SERVER_URL}/funding/posts/${id}/`
+      );
+      setProject(updatedProjectResponse.data);
+
+      setFundingSuccess(true);
+      setDonationAmount("");
+
+      // Hide success message after 3 seconds
+      setTimeout(() => setFundingSuccess(false), 3000);
+    } catch (err) {
+      console.error("Failed to post donation:", err);
+      setFundingError(
+        err.response?.data?.error ||
+          err.response?.data?.message ||
+          "Failed to process donation. Please try again."
+      );
+    } finally {
+      setFundingLoading(false);
+    }
+  };
 
   const handleCommentSubmit = async () => {
     if (!newComment.trim()) {
@@ -274,7 +333,8 @@ export default function ProjectDetails() {
               <CardContent>
                 <Typography variant="h6">Funding Details</Typography>
                 <Typography variant="body2">
-                  Raised: ${project.current_amount} / ${project.target_amount}
+                  Raised: ${project.current_amount.toLocaleString()} / $
+                  {project.target_amount.toLocaleString()}
                 </Typography>
                 <LinearProgress
                   variant="determinate"
@@ -291,21 +351,48 @@ export default function ProjectDetails() {
                     },
                   }}
                 />
+
+                {fundingSuccess && (
+                  <Alert severity="success" sx={{ mb: 2 }}>
+                    Thank you for your donation!
+                  </Alert>
+                )}
+
+                {fundingError && (
+                  <Alert severity="error" sx={{ mb: 2 }}>
+                    {fundingError}
+                  </Alert>
+                )}
+
                 <TextField
-                  label="Amount to Fund"
+                  label="Amount to Fund ($)"
                   type="number"
                   fullWidth
                   variant="outlined"
+                  value={donationAmount}
+                  onChange={(e) => setDonationAmount(e.target.value)}
                   sx={{ mb: 2 }}
                   InputProps={{
-                    startAdornment: (
-                      <Box sx={{ mr: 1, color: "#4b2997" }}>$</Box>
-                    ),
+                    inputProps: {
+                      min: 1,
+                      step: "0.01",
+                    },
                   }}
                 />
+
+                <TextField
+                  label="Optional Message"
+                  fullWidth
+                  variant="outlined"
+                  sx={{ mb: 2 }}
+                  onChange={(e) => setDonationMessage(e.target.value)}
+                />
+
                 <Button
                   fullWidth
                   variant="contained"
+                  onClick={handleFundingButton}
+                  disabled={fundingLoading}
                   sx={{
                     mt: 2,
                     backgroundImage:
@@ -319,7 +406,11 @@ export default function ProjectDetails() {
                     },
                   }}
                 >
-                  Fund this Project
+                  {fundingLoading ? (
+                    <CircularProgress size={24} color="inherit" />
+                  ) : (
+                    "Fund this Project"
+                  )}
                 </Button>
               </CardContent>
             </Card>
@@ -387,6 +478,7 @@ export default function ProjectDetails() {
                   <Box key={comment.id} sx={{ mb: 3 }}>
                     <Box display="flex" alignItems="center" mb={1}>
                       <Avatar
+                        src={project.user_image || ""}
                         sx={{
                           bgcolor: "#4b2997",
                           width: 32,

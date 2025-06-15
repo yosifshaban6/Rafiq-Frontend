@@ -27,7 +27,7 @@ function ProjectsList() {
     axios
       .get(`${VITE_SERVER_URL}/funding/posts/`)
       .then((response) => {
-        setAllPosts(response.data);
+        setAllPosts(response.data.results);
         // Initially show first page of posts
         setDisplayedPosts(response.data.slice(0, POSTS_PER_PAGE));
       })

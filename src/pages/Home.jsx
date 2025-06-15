@@ -18,7 +18,7 @@ function Home() {
     axios
       .get(`${VITE_SERVER_URL}/funding/posts/`)
       .then((response) => {
-        setPosts(response.data);
+        setPosts(response.data.results);
       })
       .catch((error) => console.error("Failed to fetch posts:", error));
   }, []);
