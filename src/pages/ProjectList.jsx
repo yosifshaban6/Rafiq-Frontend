@@ -14,7 +14,7 @@ const VITE_SERVER_URL =
   import.meta.env.VITE_SERVER_URL || "http://localhost:8000";
 
 // Number of posts to show per page
-const POSTS_PER_PAGE = 6;
+const POSTS_PER_PAGE = 8;
 
 function ProjectsList() {
   const [allPosts, setAllPosts] = useState([]);
