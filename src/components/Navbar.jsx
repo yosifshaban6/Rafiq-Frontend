@@ -25,7 +25,9 @@ const VITE_SERVER_URL =
 
 const pages = (isAuthenticated) => [
   { name: "Projects", path: "/allproject" },
-  ...(isAuthenticated ? [{ name: "Create New Project", path: "/create" }] : []),
+  ...(isAuthenticated
+    ? [{ name: "Create New Project", path: "/project/create" }]
+    : []),
   { name: "Contact Us", path: "/contact" },
 ];
 
@@ -83,12 +85,13 @@ function Navbar() {
   }, [profileImage]);
 
   React.useEffect(() => {
-    if (isAuthenticated && !profileImage) {
+    if (isAuthenticated) {
       axios
         .get(`${VITE_SERVER_URL}/account/profile/`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => {
+          console.log("results", res.data);
           if (res.data && res.data.profile_picture) {
             setProfileImage(res.data.profile_picture);
           }

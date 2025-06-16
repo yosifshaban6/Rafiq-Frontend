@@ -27,7 +27,7 @@ function AppRouter() {
           <Route path="/allproject" element={<ProjectList />} />
           <Route path="/posts/:id" element={<ProjectDetails />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/create" element={<CreateProject />} />
+          <Route path="/project/create" element={<CreateProject />} />
           <Route path="/edit" element={<EditProject />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
