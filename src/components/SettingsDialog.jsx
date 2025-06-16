@@ -1,5 +1,4 @@
 import React from "react";
-import axios from "axios"; // Import Axios
 import {
   Dialog,
   DialogTitle,
@@ -8,125 +7,185 @@ import {
   TextField,
   Button,
   Box,
+  CircularProgress,
+  Avatar,
+  IconButton,
 } from "@mui/material";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import CloseIcon from "@mui/icons-material/Close";
 
-const VITE_SERVER_URL =
-  import.meta.env.VITE_SERVER_URL || "http://localhost:8000";
+function SettingsDialog({
+  open,
+  onClose,
+  onSave,
+  formData,
+  onInputChange,
+  onImageUpload,
+  uploading,
+}) {
+  const fileInputRef = React.useRef(null);
 
-function SettingsDialog({ open, onClose, onSave, formData, onInputChange }) {
-  const handleSave = async () => {
-    try {
-      onSave();
-      // Replace 'your-api-endpoint' with the actual API endpoint
-      const response = await axios.put(`${VITE_SERVER_URL}/settings`, formData);
-      console.log("Settings updated successfully:", response.data);
-    } catch (error) {
-      console.error("Error updating settings:", error);
-    }
-  };
+  const triggerFileInput = () => fileInputRef.current.click();
 
   return (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle sx={{ color: "#4A2F8F", fontWeight: 600 }}>
-        Account Settings
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+      <DialogTitle
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        Edit Profile
+        <IconButton onClick={onClose}>
+          <CloseIcon />
+        </IconButton>
       </DialogTitle>
-      <DialogContent>
-        <Box sx={{ display: "flex", flexDirection: "row", gap: 2, mb: 2 }}>
+
+      <DialogContent dividers>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 3, py: 2 }}>
+          {/* Profile Picture Upload */}
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <Box
+              sx={{
+                width: 120,
+                height: 120,
+                borderRadius: "50%",
+                overflow: "hidden",
+                bgcolor: "action.hover",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                border: "3px dashed",
+                borderColor: "#4A2F8F",
+                cursor: "pointer",
+                mb: 1,
+              }}
+              onClick={triggerFileInput}
+            >
+              {formData.profile_picture ? (
+                <img
+                  src={formData.profile_picture}
+                  alt="Profile"
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                />
+              ) : (
+                <Avatar
+                  sx={{
+                    width: "100%",
+                    height: "100%",
+                    bgcolor: "#4A2F8F",
+                  }}
+                >
+                  {formData.first_name?.charAt(0)}
+                  {formData.last_name?.charAt(0)}
+                </Avatar>
+              )}
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={onImageUpload}
+                accept="image/*"
+                style={{ display: "none" }}
+              />
+            </Box>
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={triggerFileInput}
+              disabled={uploading}
+              startIcon={
+                uploading ? (
+                  <CircularProgress size={20} />
+                ) : (
+                  <AccountCircleIcon />
+                )
+              }
+              sx={{
+                borderColor: "#4A2F8F",
+                color: "#4A2F8F",
+              }}
+            >
+              {uploading ? "Uploading..." : "Change Photo"}
+            </Button>
+          </Box>
+
+          {/* Form Fields */}
+          <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+            <TextField
+              label="First Name"
+              name="first_name"
+              value={formData.first_name}
+              onChange={onInputChange}
+              fullWidth
+            />
+            <TextField
+              label="Last Name"
+              name="last_name"
+              value={formData.last_name}
+              onChange={onInputChange}
+              fullWidth
+            />
+          </Box>
+
           <TextField
-            autoFocus
-            margin="dense"
-            name="first_name"
-            label="First Name"
-            type="text"
-            fullWidth
-            variant="outlined"
-            value={formData.first_name}
+            label="Bio"
+            name="bio"
+            value={formData.bio}
             onChange={onInputChange}
+            multiline
+            rows={3}
+            fullWidth
           />
+
           <TextField
-            margin="dense"
-            name="last_name"
-            label="Last Name"
-            type="text"
-            fullWidth
-            variant="outlined"
-            value={formData.last_name}
+            label="Address"
+            name="address"
+            value={formData.address}
             onChange={onInputChange}
+            fullWidth
           />
+
+          <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+            <TextField
+              label="Phone"
+              name="phone"
+              value={formData.phone}
+              onChange={onInputChange}
+              fullWidth
+            />
+            <TextField
+              label="Birth Date"
+              name="birth_date"
+              type="date"
+              value={formData.birth_date}
+              onChange={onInputChange}
+              InputLabelProps={{ shrink: true }}
+              fullWidth
+            />
+          </Box>
         </Box>
-        <TextField
-          margin="dense"
-          name="profile_picture"
-          label="Profile Picture URL"
-          type="url"
-          fullWidth
-          variant="outlined"
-          value={formData.profile_picture}
-          onChange={onInputChange}
-          sx={{ mb: 2 }}
-        />
-        <TextField
-          margin="dense"
-          name="bio"
-          label="Bio"
-          type="text"
-          fullWidth
-          variant="outlined"
-          multiline
-          rows={3}
-          value={formData.bio}
-          onChange={onInputChange}
-          sx={{ mb: 2 }}
-        />
-        <TextField
-          margin="dense"
-          name="address"
-          label="Address"
-          type="text"
-          fullWidth
-          variant="outlined"
-          value={formData.address}
-          onChange={onInputChange}
-          sx={{ mb: 2 }}
-        />
-        <TextField
-          margin="dense"
-          name="birth_date"
-          label="Birth Date"
-          type="date"
-          fullWidth
-          variant="outlined"
-          value={formData.birth_date}
-          onChange={onInputChange}
-          sx={{ mb: 2 }}
-          InputLabelProps={{
-            shrink: true,
-          }}
-        />
-        <TextField
-          margin="dense"
-          name="phone"
-          label="Phone"
-          type="tel"
-          fullWidth
-          variant="outlined"
-          value={formData.phone}
-          onChange={onInputChange}
-        />
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} sx={{ color: "#4A2F8F" }}>
+
+      <DialogActions sx={{ px: 3, py: 2 }}>
+        <Button onClick={onClose} color="#4A2F8F">
           Cancel
         </Button>
         <Button
-          onClick={handleSave} // Use the new handleSave function
+          onClick={onSave}
           variant="contained"
+          disabled={uploading}
           sx={{
             backgroundColor: "#4A2F8F",
-            "&:hover": { backgroundColor: "#3a226f" },
           }}
         >
-          Save
+          Save Changes
         </Button>
       </DialogActions>
     </Dialog>

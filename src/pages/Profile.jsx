@@ -5,20 +5,31 @@ import Typography from "@mui/material/Typography";
 import ProfileCard from "../components/ProfileCard";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
-import { LinearProgress } from "@mui/material";
-import axios from "axios"; // Import axios for API calls
+import { CircularProgress, LinearProgress } from "@mui/material";
+import axios from "axios";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import ProjectCard from "../components/ProjectCard";
+import Grid from "@mui/material/Grid";
 
 const VITE_SERVER_URL =
   import.meta.env.VITE_SERVER_URL || "http://localhost:8000";
 
 function Profile() {
-  const [user, setUser] = useState(null); // Initialize user as null
-  const [loading, setLoading] = useState(true); // Loading state
-  const [error, setError] = useState(null); // Error state
+  const [user, setUser] = useState(null);
+  const [funds, setFunds] = useState([]);
+  const [userProjects, setUserProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [dataLoaded, setDataLoaded] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const token = localStorage.getItem("token"); // Retrieve token from localStorage
+      const token = localStorage.getItem("token");
 
       if (!token) {
         setError("No token found. Please log in.");
@@ -27,21 +38,40 @@ function Profile() {
       }
 
       try {
-        const response = await axios.get(
+        setLoading(true);
+        setError(null);
+
+        // First get user profile to get the user ID
+        const profileResponse = await axios.get(
           `${VITE_SERVER_URL}/account/profile/`,
           {
-            headers: {
-              Authorization: `Bearer ${token}`, // Pass token in Authorization header
-            },
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
+        setUser(profileResponse.data);
 
-        console.log("User data fetched:", response.data);
-        setUser(response.data); // Set user data from the response
-        setLoading(false);
+        console.log(profileResponse.data.id);
+
+        // Then fetch funds and projects in parallel
+        const [fundsResponse, projectsResponse] = await Promise.all([
+          axios.get(`${VITE_SERVER_URL}/funding/donations/`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get(
+            `${VITE_SERVER_URL}/funding/posts/?author=${profileResponse.data.id}`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          ),
+        ]);
+
+        setFunds(fundsResponse.data.results);
+        setUserProjects(projectsResponse.data.results || []);
+        setDataLoaded(true);
       } catch (err) {
-        console.error("Error fetching user data:", err);
-        setError("Failed to fetch user data. Please try again.");
+        console.error("Error fetching data:", err);
+        setError("Failed to fetch data. Please try again.");
+      } finally {
         setLoading(false);
       }
     };
@@ -53,17 +83,13 @@ function Profile() {
     setUser((prevUser) => ({ ...prevUser, ...updatedUser }));
   }
 
-  const raisedAmount = 1200;
-  const goalAmount = 5000;
-  const progress = (raisedAmount / goalAmount) * 100;
-
-  const projectImage = "/3.jpg";
-
   if (loading) {
     return (
-      <Container maxWidth="lg">
+      <Container maxWidth="xl">
         <Box py={4} textAlign="center">
-          <Typography variant="h6">Loading...</Typography>
+          <Typography variant="h6" mt={2}>
+            Loading your profile...
+          </Typography>
         </Box>
       </Container>
     );
@@ -71,14 +97,22 @@ function Profile() {
 
   if (error) {
     return (
-      <Container maxWidth="lg">
-        <Box py={4} textAlign="center">
-          <Typography variant="h6" color="error">
-            {error}
-          </Typography>
-        </Box>
+      <Container
+        maxWidth="xl"
+        sx={{
+          height: "70vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <CircularProgress sx={{ color: "#9f7aea" }} />
       </Container>
     );
+  }
+
+  if (!dataLoaded) {
+    return null;
   }
 
   return (
@@ -93,157 +127,131 @@ function Profile() {
           {/* Profile Section */}
           <Box sx={{ width: { xs: "100%", md: "30%" }, flexShrink: 0 }}>
             <ProfileCard user={user} onUpdateUser={onUpdateUser} />
+
+            {user?.bio && (
+              <Paper
+                elevation={3}
+                sx={{
+                  p: 3,
+                  mt: 3,
+                  boxShadow: "0px 4px 12px #9f7aea63",
+                  borderRadius: "5px",
+                }}
+              >
+                <Typography
+                  variant="h5"
+                  gutterBottom
+                  fontWeight="bold"
+                  sx={{ color: "#4A2F8F" }}
+                >
+                  About Me
+                </Typography>
+                <Typography variant="body1" color="text.secondary">
+                  {user.bio}
+                </Typography>
+              </Paper>
+            )}
           </Box>
 
-          {/* Bio and Project Section */}
-          <Box
-            sx={{
-              flexGrow: 1,
-              display: "flex",
-              flexDirection: "column",
-              gap: 3,
-            }}
-          >
+          {/* Main Content Section */}
+          <Box sx={{ flexGrow: 1 }}>
+            {/* Donations Table */}
             <Paper
               elevation={3}
               sx={{
                 p: 3,
-                backgroundColor: "#f9f9f9",
                 borderRadius: "5px",
+                boxShadow: "0 0 0 2px #9f7aea63",
+                mb: 3,
               }}
             >
-              <Typography variant="h5" gutterBottom fontWeight="bold">
-                About Me
-              </Typography>
-              <Typography variant="body1" color="text.secondary">
-                {user.bio}
-              </Typography>
-            </Paper>
-
-            <Paper
-              elevation={3}
-              sx={{
-                p: 3,
-                backgroundColor: "#f9f9f9",
-                borderRadius: "5px",
-              }}
-            >
-              <Typography variant="h5" gutterBottom fontWeight="bold">
-                Current Project
-              </Typography>
-
-              <Box
-                display="flex"
-                flexDirection={{ xs: "column", md: "row" }}
-                gap={3}
-                mb={3}
+              <Typography
+                variant="h5"
+                gutterBottom
+                fontWeight="bold"
+                color="#4A2F8F"
               >
-                {/* Project Image */}
-                <Box
-                  sx={{
-                    borderRadius: "8px",
-                    overflow: "hidden",
-                    width: { xs: "100%", md: "40%" },
-                    height: "auto",
-                    boxShadow: 2,
-                    flexShrink: 0,
-                  }}
-                >
-                  <img
-                    src={projectImage}
-                    alt="Latest Project"
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                      display: "block",
-                      minHeight: "200px",
-                      maxHeight: "300px",
-                    }}
-                  />
-                </Box>
+                My Donations
+              </Typography>
 
-                {/* Project Description */}
-                <Box sx={{ flexGrow: 1 }}>
-                  <Typography variant="body1" color="text.secondary" mb={2}>
-                    I'm currently working on an innovative platform designed to
-                    connect communities through collaborative tools and
-                    real-time interactions. This project aims to enhance digital
-                    communication and productivity, especially for remote teams
-                    and educators.
-                  </Typography>
-
-                  <Typography variant="body2" color="text.secondary" mb={2}>
-                    To bring this project to life, I'm currently seeking funding
-                    to support backend infrastructure, cloud services, and
-                    design assets. Your support can help make this idea a
-                    reality!
-                  </Typography>
-
-                  {/* Project Tags */}
-                  <Box
-                    sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}
-                  >
-                    {["React", "Node.js", "MongoDB", "Community Platform"].map(
-                      (tag) => (
-                        <Paper
-                          key={tag}
-                          elevation={0}
+              {funds.length > 0 ? (
+                <TableContainer>
+                  <Table sx={{ minWidth: 650 }} aria-label="donations table">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>
+                          <strong>Project</strong>
+                        </TableCell>
+                        <TableCell>
+                          <strong>Amount</strong>
+                        </TableCell>
+                        <TableCell>
+                          <strong>Date</strong>
+                        </TableCell>
+                        <TableCell>
+                          <strong>Message</strong>
+                        </TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {funds.map((fund) => (
+                        <TableRow
+                          key={fund.id}
                           sx={{
-                            backgroundColor: "#e0e0e0",
-                            px: 1.5,
-                            py: 0.5,
-                            borderRadius: 4,
+                            "&:last-child td, &:last-child th": { border: 0 },
                           }}
                         >
-                          <Typography variant="caption" color="text.secondary">
-                            {tag}
-                          </Typography>
-                        </Paper>
-                      )
-                    )}
-                  </Box>
-                </Box>
-              </Box>
+                          <TableCell>
+                            {fund.post_title || `Project ${fund.post}`}
+                          </TableCell>
+                          <TableCell>${fund.amount}</TableCell>
+                          <TableCell>
+                            {new Date(fund.created_at).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell>{fund.message || "-"}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              ) : (
+                <Typography
+                  variant="body1"
+                  color="text.secondary"
+                  sx={{ mt: 2 }}
+                >
+                  No donations found.
+                </Typography>
+              )}
+            </Paper>
 
-              {/* Progress Bar */}
-              <Box mb={2}>
-                <Box display="flex" justifyContent="space-between">
-                  <Typography variant="body2" color="text.secondary">
-                    ${raisedAmount.toLocaleString()} raised
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Goal: ${goalAmount.toLocaleString()}
-                  </Typography>
-                </Box>
-                <LinearProgress
-                  variant="determinate"
-                  value={progress}
-                  sx={{
-                    height: 10,
-                    borderRadius: 5,
-                    mt: 1,
-                    backgroundColor: "#e0e0e0",
-                    "& .MuiLinearProgress-bar": {
-                      background:
-                        "linear-gradient(135deg, #a084e8, rgb(202, 70, 174))",
-                    },
-                  }}
-                />
-              </Box>
-
-              {/* Edit Project Button */}
-              <Box textAlign="right">
+            {/* User Projects Section */}
+            <Paper
+              elevation={3}
+              sx={{
+                p: 3,
+                borderRadius: "5px",
+                boxShadow: "0 0 0 2px #9f7aea63",
+              }}
+            >
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+                mb={2}
+              >
+                <Typography variant="h5" fontWeight="bold" color="#4A2F8F">
+                  My Projects
+                </Typography>
                 <Button
                   variant="contained"
                   color="primary"
-                  href="/edit"
+                  href="/project/create"
                   sx={{
                     textTransform: "none",
                     background:
                       "linear-gradient(135deg, #a084e8, rgb(202, 70, 174))",
                     fontWeight: "bold",
-                    mt: 2,
                     px: 3,
                     "&:hover": {
                       background:
@@ -251,9 +259,35 @@ function Profile() {
                     },
                   }}
                 >
-                  Edit Project
+                  Create New Project
                 </Button>
               </Box>
+
+              {userProjects.length > 0 ? (
+                <Box
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns:
+                      "repeat(auto-fill, minmax(400px, 1fr))",
+                    gap: 3,
+                    py: 2,
+                  }}
+                >
+                  {userProjects.map((project) => (
+                    <Box key={project.id}>
+                      <ProjectCard post={project} />
+                    </Box>
+                  ))}
+                </Box>
+              ) : (
+                <Typography
+                  variant="body1"
+                  color="text.secondary"
+                  sx={{ mt: 2 }}
+                >
+                  You haven't created any projects yet.
+                </Typography>
+              )}
             </Paper>
           </Box>
         </Box>
