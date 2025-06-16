@@ -11,7 +11,7 @@ import {
   useTheme,
   useMediaQuery,
 } from "@mui/material";
-import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
+import { ArrowBack, ArrowForward } from "@mui/icons-material";
 import ProjectCard from "./ProjectCard";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -124,35 +124,37 @@ export default function RecommendedProjects({ project }) {
             onClick={() => sliderRef?.slickPrev()}
             sx={{
               position: "absolute",
-              left: { xs: -20, sm: -30 },
+              left: { xs: -50, sm: -40 },
               top: "50%",
               zIndex: 2,
               color: "#fff",
               backgroundColor: "#9f7aea",
+              boxShadow: "0 0 0 2px #9f7aea96",
               "&:hover": {
                 backgroundColor: "#fff",
                 color: "#7c3aed",
               },
             }}
           >
-            <ArrowBackIos />
+            <ArrowBack />
           </IconButton>
           <IconButton
             onClick={() => sliderRef?.slickNext()}
             sx={{
               position: "absolute",
-              right: { xs: -20, sm: -30 },
+              right: { xs: -50, sm: -40 },
               top: "50%",
               zIndex: 2,
               backgroundColor: "#9f7aea",
               color: "#fff",
+              boxShadow: "0 0 0 2px #9f7aea",
               "&:hover": {
                 backgroundColor: "#fff",
                 color: "#7c3aed",
               },
             }}
           >
-            <ArrowForwardIos />
+            <ArrowForward />
           </IconButton>
         </>
       )}

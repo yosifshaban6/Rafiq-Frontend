@@ -112,6 +112,7 @@ export default function ProjectDetails() {
 
       setFundingSuccess(true);
       setDonationAmount("");
+      setDonationMessage("");
 
       // Hide success message after 3 seconds
       setTimeout(() => setFundingSuccess(false), 3000);
@@ -385,6 +386,7 @@ export default function ProjectDetails() {
                   fullWidth
                   variant="outlined"
                   sx={{ mb: 2 }}
+                  value={donationMessage ? donationMessage : ""}
                   onChange={(e) => setDonationMessage(e.target.value)}
                 />
 
@@ -467,6 +469,7 @@ export default function ProjectDetails() {
               </Button>
             </CardContent>
           </Card>
+
           {/* Display Comments */}
           {comments.length > 0 && (
             <Card>
