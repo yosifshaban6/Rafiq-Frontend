@@ -4,24 +4,15 @@ import {
   Typography,
   TextField,
   Button,
-  Grid,
   Card,
   CardContent,
+  Container,
+  styled,
 } from "@mui/material";
-import { styled } from "@mui/material/styles";
 import EmailIcon from "@mui/icons-material/Email";
 import PhoneIcon from "@mui/icons-material/Phone";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { Link } from "react-router-dom";
-
-const StyledContainer = styled(Box)(({ theme }) => ({
-  minHeight: "100vh",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  backgroundColor: "#f5f5f5",
-  padding: theme.spacing(6),
-}));
 
 const ContactCard = styled(Card)(({ theme }) => ({
   padding: theme.spacing(4),
@@ -46,15 +37,9 @@ function InfoItem({ icon: Icon, label, value }) {
 
 export default function ContactPage() {
   return (
-    <StyledContainer>
-      <Box sx={{ padding: 4, backgroundColor: "#f5f5f5", minHeight: "100vh" }}>
-        <Typography
-          variant="h4"
-          textAlign="center"
-          color="#a084e8"
-          mb={4}
-          fontWeight="bold"
-        >
+    <Container maxWidth="xl" sx={{ py: 6, minHeight: "100vh" }}>
+      <Box sx={{ padding: 4 }}>
+        <Typography variant="h3" color="#a084e8" mb={4} fontWeight="bold">
           Contact Us
         </Typography>
 
@@ -170,6 +155,6 @@ export default function ContactPage() {
           </Box>
         </Box>
       </Box>
-    </StyledContainer>
+    </Container>
   );
 }

@@ -116,7 +116,7 @@ function Profile() {
   }
 
   return (
-    <Container maxWidth="xl">
+    <Container maxWidth="xl" sx={{ height: "70vh" }}>
       <Box py={4}>
         <Box
           display="flex"

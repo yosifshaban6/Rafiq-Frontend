@@ -37,6 +37,7 @@ function Home() {
   return (
     <Box
       sx={{
+        height: "70vh",
         py: 4,
         px: { xs: 2, sm: 4 },
         borderRadius: 4,
