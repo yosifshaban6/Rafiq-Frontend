@@ -82,32 +82,54 @@ function SignupForm({ setConfirmOpen }) {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
+      console.log("Submitting:", values);
       formik.setSubmitting(true);
       const formData = new FormData();
+
+      // Required fields
       formData.append("username", values.email.split("@")[0]);
       formData.append("email", values.email);
-      formData.append("phone", values.phoneNumber);
+      formData.append("phone", `${values.phoneNumber}`);
       formData.append("first_name", values.firstName);
       formData.append("last_name", values.lastName);
       formData.append("birth_date", values.birthDate);
       formData.append("password", values.password);
       formData.append("password2", values.confirmPassword);
-      formData.append("address", values.address || "");
+
+      // Optional fields
+      if (values.address) formData.append("address", values.address);
       if (values.profileImage) {
-        formData.append("profile_picture", values.profileImage);
+        formData.append("profile_image", values.profileImage);
       }
 
       axios
-        .post(`${VITE_SERVER_URL || ""}/account/register/`, formData, {
-          headers: { "Content-Type": "multipart/form-data" },
+        .post(`${VITE_SERVER_URL}/account/register/`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         })
         .then((response) => {
+          console.log("Registration success:", response.data);
           formik.setSubmitting(false);
           formik.resetForm();
           setConfirmOpen(true);
         })
         .catch((error) => {
           formik.setSubmitting(false);
+          if (error.response) {
+            console.error("Registration error:", error.response.data);
+            // Set field errors if available
+            if (error.response.data) {
+              Object.keys(error.response.data).forEach((key) => {
+                const errorMessage = Array.isArray(error.response.data[key])
+                  ? error.response.data[key].join(" ")
+                  : error.response.data[key];
+                formik.setFieldError(key.toLowerCase(), errorMessage);
+              });
+            }
+          } else {
+            console.error("Registration error:", error.message);
+          }
         });
     },
   });
