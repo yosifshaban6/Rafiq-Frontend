@@ -2,6 +2,7 @@ import { useState } from "react";
 import ConfirmDialog from "../components/ConfirmDialog";
 import { Box, Container, Paper, Stack, Avatar } from "@mui/material";
 import SignupForm from "../components/SignupForm";
+import signup_image from "../assets/signup.jpg";
 
 function Signup() {
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -58,7 +59,7 @@ function Signup() {
               }}
             >
               <Avatar
-                src="/signup.jpg"
+                src={signup_image}
                 variant="square"
                 sx={{
                   width: "100%",

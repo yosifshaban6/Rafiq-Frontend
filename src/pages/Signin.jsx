@@ -1,5 +1,6 @@
 import { Box, Container, Paper, Stack, Avatar } from "@mui/material";
 import SigninForm from "../components/SigninForm";
+import signin_image from "../assets/signin.jpg";
 
 function Signin() {
   return (
@@ -52,7 +53,7 @@ function Signin() {
               }}
             >
               <Avatar
-                src="/signin.jpg"
+                src={signin_image}
                 variant="square"
                 sx={{
                   width: "100%",
