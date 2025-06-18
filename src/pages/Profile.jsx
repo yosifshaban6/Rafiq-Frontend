@@ -5,7 +5,7 @@ import Typography from "@mui/material/Typography";
 import ProfileCard from "../components/ProfileCard";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
-import { CircularProgress, LinearProgress } from "@mui/material";
+import { Snackbar, CircularProgress, Alert } from "@mui/material";
 import axios from "axios";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -26,6 +26,15 @@ function Profile() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [dataLoaded, setDataLoaded] = useState(false);
+  const [notification, setNotification] = useState({
+    open: false,
+    message: "",
+    severity: "info",
+  });
+
+  const showNotification = (message, severity) => {
+    setNotification({ open: true, message, severity });
+  };
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -83,6 +92,12 @@ function Profile() {
     setUser((prevUser) => ({ ...prevUser, ...updatedUser }));
   }
 
+  const handleDeleteProject = (deletedProjectId) => {
+    setUserProjects(
+      userProjects.filter((project) => project.id !== deletedProjectId)
+    );
+  };
+
   if (loading) {
     return (
       <Container maxWidth="xl">
@@ -116,183 +131,197 @@ function Profile() {
   }
 
   return (
-    <Container maxWidth="xl" sx={{ height: "70vh" }}>
-      <Box py={4}>
-        <Box
-          display="flex"
-          flexDirection={{ xs: "column", md: "row" }}
-          gap={3}
-          alignItems="flex-start"
-        >
-          {/* Profile Section */}
-          <Box sx={{ width: { xs: "100%", md: "30%" }, flexShrink: 0 }}>
-            <ProfileCard user={user} onUpdateUser={onUpdateUser} />
+    <>
+      <Container maxWidth="xl" sx={{ minHeight: "70vh" }}>
+        <Box py={4}>
+          <Box
+            display="flex"
+            flexDirection={{ xs: "column", md: "row" }}
+            gap={3}
+            alignItems="flex-start"
+          >
+            {/* Profile Section */}
+            <Box sx={{ width: { xs: "100%", md: "30%" }, flexShrink: 0 }}>
+              <ProfileCard user={user} onUpdateUser={onUpdateUser} />
 
-            {user?.bio && (
+              {user?.bio && (
+                <Paper
+                  elevation={3}
+                  sx={{
+                    p: 3,
+                    mt: 3,
+                    boxShadow: "0px 4px 12px #9f7aea63",
+                    borderRadius: "5px",
+                  }}
+                >
+                  <Typography
+                    variant="h5"
+                    gutterBottom
+                    fontWeight="bold"
+                    sx={{ color: "#4A2F8F" }}
+                  >
+                    About Me
+                  </Typography>
+                  <Typography variant="body1" color="text.secondary">
+                    {user.bio}
+                  </Typography>
+                </Paper>
+              )}
+            </Box>
+
+            {/* Main Content Section */}
+            <Box sx={{ flexGrow: 1 }}>
+              {/* Donations Table */}
               <Paper
                 elevation={3}
                 sx={{
                   p: 3,
-                  mt: 3,
-                  boxShadow: "0px 4px 12px #9f7aea63",
                   borderRadius: "5px",
+                  boxShadow: "0 0 0 2px #9f7aea63",
+                  mb: 3,
                 }}
               >
                 <Typography
                   variant="h5"
                   gutterBottom
                   fontWeight="bold"
-                  sx={{ color: "#4A2F8F" }}
+                  color="#4A2F8F"
                 >
-                  About Me
+                  My Donations
                 </Typography>
-                <Typography variant="body1" color="text.secondary">
-                  {user.bio}
-                </Typography>
-              </Paper>
-            )}
-          </Box>
 
-          {/* Main Content Section */}
-          <Box sx={{ flexGrow: 1 }}>
-            {/* Donations Table */}
-            <Paper
-              elevation={3}
-              sx={{
-                p: 3,
-                borderRadius: "5px",
-                boxShadow: "0 0 0 2px #9f7aea63",
-                mb: 3,
-              }}
-            >
-              <Typography
-                variant="h5"
-                gutterBottom
-                fontWeight="bold"
-                color="#4A2F8F"
-              >
-                My Donations
-              </Typography>
-
-              {funds.length > 0 ? (
-                <TableContainer>
-                  <Table sx={{ minWidth: 650 }} aria-label="donations table">
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>
-                          <strong>Project</strong>
-                        </TableCell>
-                        <TableCell>
-                          <strong>Amount</strong>
-                        </TableCell>
-                        <TableCell>
-                          <strong>Date</strong>
-                        </TableCell>
-                        <TableCell>
-                          <strong>Message</strong>
-                        </TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {funds.map((fund) => (
-                        <TableRow
-                          key={fund.id}
-                          sx={{
-                            "&:last-child td, &:last-child th": { border: 0 },
-                          }}
-                        >
+                {funds.length > 0 ? (
+                  <TableContainer>
+                    <Table sx={{ minWidth: 650 }} aria-label="donations table">
+                      <TableHead>
+                        <TableRow>
                           <TableCell>
-                            {fund.post_title || `Project ${fund.post}`}
+                            <strong>Project</strong>
                           </TableCell>
-                          <TableCell>${fund.amount}</TableCell>
                           <TableCell>
-                            {new Date(fund.created_at).toLocaleDateString()}
+                            <strong>Amount</strong>
                           </TableCell>
-                          <TableCell>{fund.message || "-"}</TableCell>
+                          <TableCell>
+                            <strong>Date</strong>
+                          </TableCell>
+                          <TableCell>
+                            <strong>Message</strong>
+                          </TableCell>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              ) : (
-                <Typography
-                  variant="body1"
-                  color="text.secondary"
-                  sx={{ mt: 2 }}
-                >
-                  No donations found.
-                </Typography>
-              )}
-            </Paper>
+                      </TableHead>
+                      <TableBody>
+                        {funds.map((fund) => (
+                          <TableRow
+                            key={fund.id}
+                            sx={{
+                              "&:last-child td, &:last-child th": { border: 0 },
+                            }}
+                          >
+                            <TableCell>
+                              {fund.post_title || `Project ${fund.post}`}
+                            </TableCell>
+                            <TableCell>${fund.amount}</TableCell>
+                            <TableCell>
+                              {new Date(fund.created_at).toLocaleDateString()}
+                            </TableCell>
+                            <TableCell>{fund.message || "-"}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                ) : (
+                  <Typography
+                    variant="body1"
+                    color="text.secondary"
+                    sx={{ mt: 2 }}
+                  >
+                    No donations found.
+                  </Typography>
+                )}
+              </Paper>
 
-            {/* User Projects Section */}
-            <Paper
-              elevation={3}
-              sx={{
-                p: 3,
-                borderRadius: "5px",
-                boxShadow: "0 0 0 2px #9f7aea63",
-              }}
-            >
-              <Box
-                display="flex"
-                justifyContent="space-between"
-                alignItems="center"
-                mb={2}
+              {/* User Projects Section */}
+              <Paper
+                elevation={3}
+                sx={{
+                  p: 3,
+                  borderRadius: "5px",
+                  boxShadow: "0 0 0 2px #9f7aea63",
+                }}
               >
-                <Typography variant="h5" fontWeight="bold" color="#4A2F8F">
-                  My Projects
-                </Typography>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  href="/project/create"
-                  sx={{
-                    textTransform: "none",
-                    background:
-                      "linear-gradient(135deg, #a084e8, rgb(202, 70, 174))",
-                    fontWeight: "bold",
-                    px: 3,
-                    "&:hover": {
-                      background:
-                        "linear-gradient(135deg, #8a6ee8, rgb(182, 50, 164))",
-                    },
-                  }}
-                >
-                  Create New Project
-                </Button>
-              </Box>
-
-              {userProjects.length > 0 ? (
                 <Box
-                  sx={{
-                    display: "grid",
-                    gridTemplateColumns:
-                      "repeat(auto-fill, minmax(400px, 1fr))",
-                    gap: 3,
-                    py: 2,
-                  }}
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  mb={2}
                 >
-                  {userProjects.map((project) => (
-                    <Box key={project.id}>
-                      <ProjectCard post={project} />
-                    </Box>
-                  ))}
+                  <Typography variant="h5" fontWeight="bold" color="#4A2F8F">
+                    My Projects
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    href="/project/create"
+                    sx={{
+                      textTransform: "none",
+                      background:
+                        "linear-gradient(135deg, #a084e8, rgb(202, 70, 174))",
+                      fontWeight: "bold",
+                      px: 3,
+                      "&:hover": {
+                        background:
+                          "linear-gradient(135deg, #8a6ee8, rgb(182, 50, 164))",
+                      },
+                    }}
+                  >
+                    Create New Project
+                  </Button>
                 </Box>
-              ) : (
-                <Typography
-                  variant="body1"
-                  color="text.secondary"
-                  sx={{ mt: 2 }}
-                >
-                  You haven't created any projects yet.
-                </Typography>
-              )}
-            </Paper>
+
+                {userProjects.length > 0 ? (
+                  <Box
+                    sx={{
+                      display: "grid",
+                      gridTemplateColumns:
+                        "repeat(auto-fill, minmax(400px, 1fr))",
+                      gap: 3,
+                      py: 2,
+                    }}
+                  >
+                    {userProjects.map((project) => (
+                      <Box key={project.id}>
+                        <ProjectCard
+                          post={project}
+                          setPost={setUserProjects}
+                          onDelete={handleDeleteProject}
+                          onShowNotification={showNotification}
+                        />
+                      </Box>
+                    ))}
+                  </Box>
+                ) : (
+                  <Typography
+                    variant="body1"
+                    color="text.secondary"
+                    sx={{ mt: 2 }}
+                  >
+                    You haven't created any projects yet.
+                  </Typography>
+                )}
+              </Paper>
+            </Box>
           </Box>
         </Box>
-      </Box>
-    </Container>
+      </Container>
+      <Snackbar
+        open={notification.open}
+        autoHideDuration={6000}
+        onClose={() => setNotification({ ...notification, open: false })}
+      >
+        <Alert severity={notification.severity}>{notification.message}</Alert>
+      </Snackbar>
+    </>
   );
 }
 

@@ -17,7 +17,7 @@ const VITE_SERVER_URL =
 const POSTS_PER_PAGE = 8;
 
 function ProjectsList() {
-  const [allPosts, setAllPosts] = useState([]);
+  const [posts, setPosts] = useState([]);
   const [displayedPosts, setDisplayedPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -27,27 +27,27 @@ function ProjectsList() {
     axios
       .get(`${VITE_SERVER_URL}/funding/posts/`)
       .then((response) => {
-        setAllPosts(response.data.results);
+        setPosts(response.data.results);
         // Initially show first page of posts
-        setDisplayedPosts(response.data.slice(0, POSTS_PER_PAGE));
+        setDisplayedPosts(response.data.results.slice(0, POSTS_PER_PAGE));
       })
       .catch((error) => console.error("Failed to fetch posts:", error))
       .finally(() => setIsLoading(false));
-  }, []);
+  }, [posts]);
 
   useEffect(() => {
-    if (allPosts.length > 0) {
+    if (posts.length > 0) {
       const endIndex = page * POSTS_PER_PAGE;
-      setDisplayedPosts(allPosts.slice(0, endIndex));
+      setDisplayedPosts(posts.slice(0, endIndex));
     }
-  }, [page, allPosts]);
+  }, [page, posts]);
 
   const handleLoadMore = () => {
     setPage((prevPage) => prevPage + 1);
   };
 
   // Calculate if there are more posts to load
-  const hasMorePosts = displayedPosts.length < allPosts.length;
+  const hasMorePosts = displayedPosts.length < posts.length;
 
   return (
     <Box
@@ -79,7 +79,7 @@ function ProjectsList() {
           </Box>
         ) : (
           <>
-            <ProjectGrid posts={displayedPosts} />
+            <ProjectGrid posts={displayedPosts} setPosts={setPosts} />
 
             {hasMorePosts && (
               <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
@@ -106,7 +106,7 @@ function ProjectsList() {
               </Box>
             )}
 
-            {!hasMorePosts && allPosts.length > 0 && (
+            {!hasMorePosts && posts.length > 0 && (
               <Typography
                 variant="body1"
                 textAlign="center"

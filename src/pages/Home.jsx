@@ -166,7 +166,11 @@ function Home() {
           Featured Projects
         </Typography>
         <Box sx={{ flexGrow: 1 }}></Box>
-        <ProjectGrid posts={posts} onCardClick={handleCardClick} />
+        <ProjectGrid
+          posts={posts}
+          setPosts={setPosts}
+          onCardClick={handleCardClick}
+        />
       </Container>
     </Box>
   );
