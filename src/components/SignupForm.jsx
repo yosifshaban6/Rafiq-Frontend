@@ -13,10 +13,13 @@ import {
   Stack,
   MenuItem,
   Select,
+  Alert,
+  Collapse,
+  CircularProgress,
 } from "@mui/material";
 import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { Link } from "react-router";
+import { Visibility, VisibilityOff, Close } from "@mui/icons-material";
+import { Link } from "react-router-dom";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import axios from "axios";
@@ -51,7 +54,7 @@ const validationSchema = yup.object({
   profileImage: yup
     .mixed()
     .test("fileType", "Only JPEG and PNG images are allowed", (value) => {
-      if (!value) return true; // if no file, skip validation
+      if (!value) return true;
       return value && ["image/jpeg", "image/png"].includes(value.type);
     }),
 });
@@ -67,6 +70,8 @@ function SignupForm({ setConfirmOpen }) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
+  const [apiErrors, setApiErrors] = useState({});
+  const [generalError, setGeneralError] = useState(null);
 
   const formik = useFormik({
     initialValues: {
@@ -79,60 +84,79 @@ function SignupForm({ setConfirmOpen }) {
       password: "",
       confirmPassword: "",
       profileImage: null,
+      address: "",
     },
     validationSchema: validationSchema,
-    onSubmit: (values) => {
-      console.log("Submitting:", values);
-      formik.setSubmitting(true);
-      const formData = new FormData();
+    validateOnChange: false,
+    validateOnBlur: false,
+    onSubmit: async (values) => {
+      setApiErrors({});
+      setGeneralError(null);
 
-      // Required fields
-      formData.append("username", values.email.split("@")[0]);
-      formData.append("email", values.email);
-      formData.append("phone", `${values.phoneNumber}`);
-      formData.append("first_name", values.firstName);
-      formData.append("last_name", values.lastName);
-      formData.append("birth_date", values.birthDate);
-      formData.append("password", values.password);
-      formData.append("password2", values.confirmPassword);
+      try {
+        formik.setSubmitting(true);
+        const formData = new FormData();
 
-      // Optional fields
-      if (values.address) formData.append("address", values.address);
-      if (values.profileImage) {
-        formData.append("profile_image", values.profileImage);
-      }
+        formData.append("username", values.email.split("@")[0]);
+        formData.append("email", values.email);
+        formData.append("phone", `${values.countryCode}${values.phoneNumber}`);
+        formData.append("first_name", values.firstName);
+        formData.append("last_name", values.lastName);
+        formData.append("birth_date", values.birthDate);
+        formData.append("password", values.password);
+        formData.append("password2", values.confirmPassword);
 
-      axios
-        .post(`${VITE_SERVER_URL}/account/register/`, formData, {
+        if (values.address) formData.append("address", values.address);
+        if (values.profileImage) {
+          formData.append("profile_image", values.profileImage);
+        }
+
+        await axios.post(`${VITE_SERVER_URL}/account/register/`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        })
-        .then((response) => {
-          console.log("Registration success:", response.data);
-          formik.setSubmitting(false);
-          formik.resetForm();
-          setConfirmOpen(true);
-        })
-        .catch((error) => {
-          formik.setSubmitting(false);
-          if (error.response) {
-            console.error("Registration error:", error.response.data);
-            // Set field errors if available
-            if (error.response.data) {
-              Object.keys(error.response.data).forEach((key) => {
-                const errorMessage = Array.isArray(error.response.data[key])
-                  ? error.response.data[key].join(" ")
-                  : error.response.data[key];
-                formik.setFieldError(key.toLowerCase(), errorMessage);
-              });
-            }
-          } else {
-            console.error("Registration error:", error.message);
-          }
         });
+
+        formik.resetForm();
+        setConfirmOpen(true);
+      } catch (error) {
+        if (error.response) {
+          const fieldErrors = {};
+          Object.keys(error.response.data).forEach((key) => {
+            const errorMessage = Array.isArray(error.response.data[key])
+              ? error.response.data[key].join(" ")
+              : error.response.data[key];
+
+            const formField = mapServerFieldToFormField(key);
+            if (formField) {
+              fieldErrors[formField] = errorMessage;
+            } else {
+              setGeneralError(errorMessage);
+            }
+          });
+          setApiErrors(fieldErrors);
+        } else {
+          setGeneralError(error.message || "An unexpected error occurred");
+        }
+      } finally {
+        formik.setSubmitting(false);
+      }
     },
   });
+
+  const mapServerFieldToFormField = (serverField) => {
+    const fieldMap = {
+      first_name: "firstName",
+      last_name: "lastName",
+      email: "email",
+      phone: "phoneNumber",
+      birth_date: "birthDate",
+      password: "password",
+      password2: "confirmPassword",
+      profile_image: "profileImage",
+    };
+    return fieldMap[serverField] || null;
+  };
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
   const handleClickShowConfirmPassword = () =>
@@ -142,7 +166,6 @@ function SignupForm({ setConfirmOpen }) {
     const file = event.currentTarget.files[0];
     if (file) {
       formik.setFieldValue("profileImage", file);
-      // Create preview
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreviewImage(reader.result);
@@ -173,10 +196,31 @@ function SignupForm({ setConfirmOpen }) {
           <VolunteerActivismIcon sx={{ mr: 1, fontSize: "36px" }} />
           Rafiq
         </Typography>
+
+        <Collapse in={!!generalError}>
+          <Alert
+            severity="error"
+            sx={{ mb: 2 }}
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={() => setGeneralError(null)}
+              >
+                <Close fontSize="inherit" />
+              </IconButton>
+            }
+          >
+            {generalError}
+          </Alert>
+        </Collapse>
+
         <Box
           component="form"
           onSubmit={formik.handleSubmit}
           encType="multipart/form-data"
+          noValidate
         >
           {formik.touched.profileImage && formik.errors.profileImage && (
             <Typography
@@ -198,11 +242,14 @@ function SignupForm({ setConfirmOpen }) {
               size="small"
               value={formik.values.firstName}
               onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
               error={
-                formik.touched.firstName && Boolean(formik.errors.firstName)
+                (formik.submitCount > 0 && formik.errors.firstName) ||
+                apiErrors.firstName
               }
-              helperText={formik.touched.firstName && formik.errors.firstName}
+              helperText={
+                (formik.submitCount > 0 && formik.errors.firstName) ||
+                apiErrors.firstName
+              }
               margin="normal"
               sx={{
                 "& .MuiOutlinedInput-root": {
@@ -224,9 +271,14 @@ function SignupForm({ setConfirmOpen }) {
               size="small"
               value={formik.values.lastName}
               onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={formik.touched.lastName && Boolean(formik.errors.lastName)}
-              helperText={formik.touched.lastName && formik.errors.lastName}
+              error={
+                (formik.submitCount > 0 && formik.errors.lastName) ||
+                apiErrors.lastName
+              }
+              helperText={
+                (formik.submitCount > 0 && formik.errors.lastName) ||
+                apiErrors.lastName
+              }
               margin="normal"
               sx={{
                 "& .MuiOutlinedInput-root": {
@@ -251,9 +303,12 @@ function SignupForm({ setConfirmOpen }) {
             size="small"
             value={formik.values.email}
             onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.email && Boolean(formik.errors.email)}
-            helperText={formik.touched.email && formik.errors.email}
+            error={
+              (formik.submitCount > 0 && formik.errors.email) || apiErrors.email
+            }
+            helperText={
+              (formik.submitCount > 0 && formik.errors.email) || apiErrors.email
+            }
             margin="normal"
             sx={{
               "& .MuiOutlinedInput-root": {
@@ -277,7 +332,6 @@ function SignupForm({ setConfirmOpen }) {
                 name="countryCode"
                 value={formik.values.countryCode}
                 onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
                 label="Country Code"
                 size="small"
                 sx={{
@@ -298,7 +352,7 @@ function SignupForm({ setConfirmOpen }) {
                   </MenuItem>
                 ))}
               </Select>
-              {formik.touched.countryCode && formik.errors.countryCode && (
+              {formik.submitCount > 0 && formik.errors.countryCode && (
                 <FormHelperText error>
                   {formik.errors.countryCode}
                 </FormHelperText>
@@ -312,12 +366,13 @@ function SignupForm({ setConfirmOpen }) {
               size="small"
               value={formik.values.phoneNumber}
               onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
               error={
-                formik.touched.phoneNumber && Boolean(formik.errors.phoneNumber)
+                (formik.submitCount > 0 && formik.errors.phoneNumber) ||
+                apiErrors.phoneNumber
               }
               helperText={
-                formik.touched.phoneNumber && formik.errors.phoneNumber
+                (formik.submitCount > 0 && formik.errors.phoneNumber) ||
+                apiErrors.phoneNumber
               }
               margin="normal"
               sx={{
@@ -333,17 +388,15 @@ function SignupForm({ setConfirmOpen }) {
               }}
             />
           </Stack>
+
           <TextField
             fullWidth
             id="address"
             name="address"
-            label="Address"
+            label="Address (Optional)"
             size="small"
-            value={formik.values.address || ""}
+            value={formik.values.address}
             onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.address && Boolean(formik.errors.address)}
-            helperText={formik.touched.address && formik.errors.address}
             margin="normal"
             sx={{
               "& .MuiOutlinedInput-root": {
@@ -357,6 +410,7 @@ function SignupForm({ setConfirmOpen }) {
               },
             }}
           />
+
           <TextField
             fullWidth
             id="birthDate"
@@ -364,16 +418,19 @@ function SignupForm({ setConfirmOpen }) {
             label="Birth Date"
             type="date"
             size="small"
-            slotProps={{
-              inputLabel: {
-                shrink: true,
-              },
+            InputLabelProps={{
+              shrink: true,
             }}
             value={formik.values.birthDate}
             onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.birthDate && Boolean(formik.errors.birthDate)}
-            helperText={formik.touched.birthDate && formik.errors.birthDate}
+            error={
+              (formik.submitCount > 0 && formik.errors.birthDate) ||
+              apiErrors.birthDate
+            }
+            helperText={
+              (formik.submitCount > 0 && formik.errors.birthDate) ||
+              apiErrors.birthDate
+            }
             margin="normal"
             sx={{
               "& .MuiOutlinedInput-root": {
@@ -412,8 +469,10 @@ function SignupForm({ setConfirmOpen }) {
               type={showPassword ? "text" : "password"}
               value={formik.values.password}
               onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={formik.touched.password && Boolean(formik.errors.password)}
+              error={
+                (formik.submitCount > 0 && formik.errors.password) ||
+                apiErrors.password
+              }
               endAdornment={
                 <InputAdornment position="end">
                   <IconButton
@@ -428,8 +487,11 @@ function SignupForm({ setConfirmOpen }) {
               }
               label="Password"
             />
-            {formik.touched.password && formik.errors.password && (
+            {formik.submitCount > 0 && formik.errors.password && (
               <FormHelperText error>{formik.errors.password}</FormHelperText>
+            )}
+            {apiErrors.password && (
+              <FormHelperText error>{apiErrors.password}</FormHelperText>
             )}
           </FormControl>
 
@@ -457,10 +519,9 @@ function SignupForm({ setConfirmOpen }) {
               type={showConfirmPassword ? "text" : "password"}
               value={formik.values.confirmPassword}
               onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
               error={
-                formik.touched.confirmPassword &&
-                Boolean(formik.errors.confirmPassword)
+                (formik.submitCount > 0 && formik.errors.confirmPassword) ||
+                apiErrors.confirmPassword
               }
               endAdornment={
                 <InputAdornment position="end">
@@ -476,12 +537,14 @@ function SignupForm({ setConfirmOpen }) {
               }
               label="Confirm Password"
             />
-            {formik.touched.confirmPassword &&
-              formik.errors.confirmPassword && (
-                <FormHelperText error>
-                  {formik.errors.confirmPassword}
-                </FormHelperText>
-              )}
+            {formik.submitCount > 0 && formik.errors.confirmPassword && (
+              <FormHelperText error>
+                {formik.errors.confirmPassword}
+              </FormHelperText>
+            )}
+            {apiErrors.confirmPassword && (
+              <FormHelperText error>{apiErrors.confirmPassword}</FormHelperText>
+            )}
           </FormControl>
 
           <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
@@ -496,6 +559,9 @@ function SignupForm({ setConfirmOpen }) {
                   borderColor: "#7b5fc9",
                   textTransform: "none",
                   color: "#7b5fc9",
+                  "&:hover": {
+                    borderColor: "#4a2f8f",
+                  },
                 }}
               >
                 Upload Profile Image (PNG/JPG)
@@ -507,9 +573,14 @@ function SignupForm({ setConfirmOpen }) {
                   onChange={handleImageChange}
                 />
               </Button>
-              {formik.touched.profileImage && formik.errors.profileImage && (
+              {formik.submitCount > 0 && formik.errors.profileImage && (
                 <FormHelperText error sx={{ mt: 1 }}>
                   {formik.errors.profileImage}
+                </FormHelperText>
+              )}
+              {apiErrors.profileImage && (
+                <FormHelperText error sx={{ mt: 1 }}>
+                  {apiErrors.profileImage}
                 </FormHelperText>
               )}
               {formik.values.profileImage && (
@@ -523,6 +594,7 @@ function SignupForm({ setConfirmOpen }) {
               )}
             </FormControl>
           </Box>
+
           <Button
             type="submit"
             fullWidth
@@ -534,18 +606,31 @@ function SignupForm({ setConfirmOpen }) {
               textTransform: "none",
               fontSize: "1rem",
               background: "#7b5fc9",
+              "&:hover": {
+                background: "#4a2f8f",
+              },
             }}
-            disabled={!formik.isValid || formik.isSubmitting}
+            disabled={formik.isSubmitting}
           >
-            Sign Up
+            {formik.isSubmitting ? (
+              <>
+                <CircularProgress size={24} color="inherit" sx={{ mr: 1 }} />
+                Signing Up...
+              </>
+            ) : (
+              "Sign Up"
+            )}
           </Button>
 
           <Typography variant="body2" align="center">
             Already have an account?{" "}
             <Link
               to="/signin"
-              underline="hover"
-              sx={{ fontWeight: 500, color: "#4a2f8f" }}
+              style={{
+                textDecoration: "none",
+                fontWeight: 500,
+                color: "#4a2f8f",
+              }}
             >
               Sign in
             </Link>

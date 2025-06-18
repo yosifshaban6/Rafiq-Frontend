@@ -15,6 +15,7 @@ import {
   DialogContent,
   DialogActions,
   CircularProgress,
+  Alert,
 } from "@mui/material";
 import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
@@ -49,6 +50,7 @@ function SigninForm() {
   const [openResetDialog, setOpenResetDialog] = useState(false);
   const [resetSuccess, setResetSuccess] = useState(false);
   const [resetError, setResetError] = useState("");
+  const [loginError, setLoginError] = useState("");
 
   const formik = useFormik({
     initialValues: {
@@ -57,7 +59,7 @@ function SigninForm() {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      console.log("Form values:", values);
+      setLoginError("");
       formik.setSubmitting(true);
       axios
         .post(`${VITE_SERVER_URL}/account/login/`, values)
@@ -69,6 +71,20 @@ function SigninForm() {
         })
         .catch((error) => {
           console.log("Login error:", error);
+          if (error.response) {
+            if (error.response.status === 401) {
+              setLoginError("Invalid email or password");
+            } else {
+              setLoginError(
+                error.response.data?.detail ||
+                  "An error occurred during login. Please try again."
+              );
+            }
+          } else if (error.request) {
+            setLoginError("No response from server. Please try again later.");
+          } else {
+            setLoginError("An unexpected error occurred. Please try again.");
+          }
         })
         .finally(() => {
           formik.setSubmitting(false);
@@ -92,7 +108,7 @@ function SigninForm() {
         })
         .catch((error) => {
           setResetError(
-            error.response?.data?.message ||
+            error.response?.data?.detail ||
               "Failed to send reset link. Please try again."
           );
         })
@@ -133,6 +149,14 @@ function SigninForm() {
           <VolunteerActivismIcon sx={{ mr: 1, fontSize: "36px" }} />
           Rafiq
         </Typography>
+
+        {/* Display login error if exists */}
+        {loginError && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {loginError}
+          </Alert>
+        )}
+
         <Box component="form" onSubmit={formik.handleSubmit}>
           <TextField
             fullWidth
