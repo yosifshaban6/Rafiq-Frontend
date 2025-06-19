@@ -57,10 +57,10 @@ function ProfileCard({ user, onUpdateUser }) {
     });
   };
 
-  const handleSaveSettings = async () => {
+  const handleSaveSettings = async (newFormData) => {
     try {
       const token = localStorage.getItem("token");
-      const dataToSend = { ...formData };
+      const dataToSend = { ...newFormData };
 
       // Don't send profile_picture if it hasn't changed
       if (dataToSend.profile_picture === user.profile_picture) {
@@ -79,17 +79,13 @@ function ProfileCard({ user, onUpdateUser }) {
       );
 
       onUpdateUser(response.data);
+      setFormData(newFormData);
       setOpenSettings(false);
       setSuccess("Profile updated successfully!");
     } catch (error) {
       console.error("Profile update error:", error);
       setError(error.response?.data?.detail || "Failed to update profile");
     }
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleImageUpload = async (e) => {
@@ -291,12 +287,17 @@ function ProfileCard({ user, onUpdateUser }) {
           open={openSettings}
           onClose={handleCloseSettings}
           onSave={handleSaveSettings}
-          formData={formData}
-          onInputChange={handleInputChange}
+          initialData={{
+            first_name: user.first_name || "",
+            last_name: user.last_name || "",
+            profile_picture: user.profile_picture || "",
+            bio: user.bio || "",
+            address: user.address || "",
+            birth_date: user.birth_date || "",
+            phone: user.phone || "",
+          }}
           onImageUpload={handleImageUpload}
           uploading={uploading}
-          setFormData={setFormData}
-          onUpdateUser={onUpdateUser}
         />
       </Card>
 
