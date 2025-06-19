@@ -11,7 +11,6 @@ import {
   Button,
   LinearProgress,
   Chip,
-  Rating,
   TextField,
   Divider,
   Avatar,
@@ -51,13 +50,25 @@ export default function ProjectDetails() {
     const fetchProjectAndComments = async () => {
       try {
         setLoading(true);
-        // Fetch project details
         const projectResponse = await axios.get(
           `${VITE_SERVER_URL}/funding/posts/${id}/`
         );
         setProject(projectResponse.data);
-        setComments(projectResponse.data.comments || []);
-        console.log("Project data fetched:", projectResponse.data);
+
+        // Format comments to ensure consistent structure
+        const formattedComments =
+          projectResponse.data.comments?.map((comment) => ({
+            ...comment,
+            user: {
+              ...comment.user,
+              first_name: comment.user.first_name || "",
+              last_name: comment.user.last_name || "",
+              username: comment.user.username || "",
+              profile_picture: comment.user.profile_picture || "",
+            },
+          })) || [];
+        console.log(formattedComments);
+        setComments(formattedComments);
       } catch (err) {
         console.error("Failed to fetch project or comments:", err);
         setError("Failed to load project details. Please try again later.");
@@ -104,7 +115,6 @@ export default function ProjectDetails() {
         }
       );
 
-      // Update the project data with the new funding amount
       const updatedProjectResponse = await axios.get(
         `${VITE_SERVER_URL}/funding/posts/${id}/`
       );
@@ -114,7 +124,6 @@ export default function ProjectDetails() {
       setDonationAmount("");
       setDonationMessage("");
 
-      // Hide success message after 3 seconds
       setTimeout(() => setFundingSuccess(false), 3000);
     } catch (err) {
       console.error("Failed to post donation:", err);
@@ -157,8 +166,18 @@ export default function ProjectDetails() {
         }
       );
 
-      // Add the new comment to the list
-      setComments([response.data, ...comments]);
+      // Create new comment with user data
+      const newCommentWithUser = {
+        ...response.data,
+        user: {
+          first_name: user.first_name || user.username,
+          last_name: user.last_name || "",
+          username: user.username,
+          profile_picture: user.profile_picture || "",
+        },
+      };
+
+      setComments([newCommentWithUser, ...comments]);
       setNewComment("");
     } catch (err) {
       console.error("Failed to post comment:", err);
@@ -213,12 +232,10 @@ export default function ProjectDetails() {
     );
   }
 
-  // Check if the current user is the project author
   const isProjectAuthor = user && project.author === user.username;
 
   return (
     <Container maxWidth="xl" sx={{ py: 3 }}>
-      {/* Main Content Row */}
       <Grid container spacing={4}>
         {/* Project Details Column - now 8 columns in md */}
         <Grid item size={8}>
@@ -227,17 +244,15 @@ export default function ProjectDetails() {
               {project.title}
             </Typography>
 
-            {/* Image Slider */}
-            <Box sx={{ position: "relative", height: 400 }}>
+            <Box sx={{ position: "relative", height: 450 }}>
               <CardMedia
                 component="img"
-                height="400"
+                height="450"
                 image={project.image_urls[currentImageIndex].image}
                 alt={`${project.title} - Image ${currentImageIndex + 1}`}
                 sx={{ objectFit: "cover", width: "100%" }}
               />
 
-              {/* Navigation Arrows */}
               <IconButton
                 onClick={prevImage}
                 sx={{
@@ -272,7 +287,6 @@ export default function ProjectDetails() {
                 <ArrowForward />
               </IconButton>
 
-              {/* Image Indicators */}
               <Box
                 sx={{
                   position: "absolute",
@@ -386,7 +400,7 @@ export default function ProjectDetails() {
                   fullWidth
                   variant="outlined"
                   sx={{ mb: 2 }}
-                  value={donationMessage ? donationMessage : ""}
+                  value={donationMessage}
                   onChange={(e) => setDonationMessage(e.target.value)}
                 />
 
@@ -418,7 +432,6 @@ export default function ProjectDetails() {
             </Card>
           )}
 
-          {/* Comment Form */}
           <Card sx={{ mb: 3 }}>
             <CardContent>
               <Typography variant="h6" gutterBottom>
@@ -470,7 +483,6 @@ export default function ProjectDetails() {
             </CardContent>
           </Card>
 
-          {/* Display Comments */}
           {comments.length > 0 && (
             <Card>
               <CardContent>
@@ -481,7 +493,7 @@ export default function ProjectDetails() {
                   <Box key={comment.id} sx={{ mb: 3 }}>
                     <Box display="flex" alignItems="center" mb={1}>
                       <Avatar
-                        src={project.user_image || ""}
+                        src={`${VITE_SERVER_URL}${comment.user.profile_picture}`}
                         sx={{
                           bgcolor: "#4b2997",
                           width: 32,
@@ -490,11 +502,13 @@ export default function ProjectDetails() {
                           fontSize: "0.875rem",
                         }}
                       >
-                        {comment.user?.charAt(0)?.toUpperCase() || "U"}
+                        {comment.user.first_name?.charAt(0)?.toUpperCase() ||
+                          comment.user.username?.charAt(0)?.toUpperCase() ||
+                          "U"}
                       </Avatar>
                       <Box>
                         <Typography variant="subtitle2" sx={{ lineHeight: 1 }}>
-                          {comment.user || "Unknown User"}
+                          {comment.user.first_name} {comment.user.last_name}
                         </Typography>
                         <Typography variant="caption" color="text.secondary">
                           {new Date(comment.created_at).toLocaleString()}
@@ -513,7 +527,6 @@ export default function ProjectDetails() {
         </Grid>
       </Grid>
 
-      {/* Recommended Projects - Full width below the main row */}
       {project && (
         <Box mt={6}>
           <RecommendedProjects project={project} />
