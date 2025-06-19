@@ -54,6 +54,7 @@ export default function ProjectDetails() {
           `${VITE_SERVER_URL}/funding/posts/${id}/`
         );
         setProject(projectResponse.data);
+        console.log("Response comments", projectResponse.data);
 
         // Format comments to ensure consistent structure
         const formattedComments =
