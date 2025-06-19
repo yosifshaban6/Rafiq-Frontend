@@ -99,7 +99,7 @@ function SignupForm({ setConfirmOpen }) {
 
         formData.append("username", values.email.split("@")[0]);
         formData.append("email", values.email);
-        formData.append("phone", `${values.countryCode}${values.phoneNumber}`);
+        formData.append("phone", `${values.phoneNumber}`);
         formData.append("first_name", values.firstName);
         formData.append("last_name", values.lastName);
         formData.append("birth_date", values.birthDate);
